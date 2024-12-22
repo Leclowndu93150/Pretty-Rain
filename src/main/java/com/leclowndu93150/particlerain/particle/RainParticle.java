@@ -2,6 +2,7 @@ package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRainConfig;
+import com.leclowndu93150.particlerain.ParticleRegistry;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -84,7 +85,7 @@ public class RainParticle extends WeatherParticle {
                     if (height != 0 && raycastHit.distanceToSqr(new Vec2((float) spawnPos.x, (float) spawnPos.z)) < 0.01) {
                         if (ParticleRainConfig.doRippleParticles && fluidState.isSourceOfType(Fluids.WATER)) {
                             if (height != 1) { // lazy workaround
-                                Minecraft.getInstance().particleEngine.createParticle(ParticleRainClient.RIPPLE, spawnPos.x, spawnPos.y + height, spawnPos.z, 0, 0, 0);
+                                Minecraft.getInstance().particleEngine.createParticle(ParticleRegistry.RIPPLE.get(), spawnPos.x, spawnPos.y + height, spawnPos.z, 0, 0, 0);
                                 if (level.isThundering() && ParticleRainConfig.doSplashParticles) Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.RAIN, spawnPos.x, spawnPos.y + height, spawnPos.z, 0, 0, 0);
                             }
                         } else if (ParticleRainConfig.doSmokeParticles && (blockState.is(BlockTags.INFINIBURN_OVERWORLD) || blockState.is(BlockTags.STRIDER_WARM_BLOCKS))) {
@@ -106,7 +107,7 @@ public class RainParticle extends WeatherParticle {
                 if (ParticleRainConfig.doStreakParticles && Minecraft.getInstance().cameraEntity.position().distanceTo(this.pos.getCenter()) < ParticleRainConfig.particleRadius - (ParticleRainConfig.particleRadius / 2.0)) {
                     BlockState state = level.getBlockState(hit.getBlockPos());
                     if (state.is(BlockTags.IMPERMEABLE) || state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
-                        Minecraft.getInstance().particleEngine.createParticle(ParticleRainClient.STREAK, this.x, this.y, this.z, hit.getDirection().get2DDataValue(), 0, 0);
+                        Minecraft.getInstance().particleEngine.createParticle(ParticleRegistry.STREAK.get(), this.x, this.y, this.z, hit.getDirection().get2DDataValue(), 0, 0);
                         Minecraft.getInstance().particleEngine.createParticle(ParticleTypes.RAIN, this.x, this.y, this.z, 0, 0, 0);
                     }
                 }

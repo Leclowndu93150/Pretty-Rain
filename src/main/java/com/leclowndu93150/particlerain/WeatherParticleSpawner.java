@@ -29,7 +29,7 @@ public final class WeatherParticleSpawner {
             y = ParticleRainConfig.cloudHeight;
         }
         if (ParticleRainConfig.doFogParticles && level.random.nextFloat() < ParticleRainConfig.FogOptions.density / 100F) {
-            level.addParticle(ParticleRainClient.FOG, x, y, z, 0, 0, 0);
+            level.addParticle(ParticleRegistry.FOG.get(), x, y, z, 0, 0, 0);
         }
         Precipitation precipitation = biome.value().getPrecipitationAt(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos));
         //biome.value().hasPrecipitation() isn't reliable for modded biomes and seasons
@@ -37,26 +37,26 @@ public final class WeatherParticleSpawner {
             if (ParticleRainConfig.doGroundFogParticles && ParticleRainClient.fogCount < ParticleRainConfig.GroundFogOptions.density) {
                 int height = level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) x, (int) z);
                 if (height <= ParticleRainConfig.GroundFogOptions.spawnHeight && height >= ParticleRainConfig.GroundFogOptions.spawnHeight - 4 && level.getFluidState(BlockPos.containing(x, height - 1, z)).isEmpty()) {
-                    level.addParticle(ParticleRainClient.GROUND_FOG, x, height + level.random.nextFloat(), z, 0, 0, 0);
+                    level.addParticle(ParticleRegistry.GROUND_FOG.get(), x, height + level.random.nextFloat(), z, 0, 0, 0);
                 }
             }
             if (ParticleRainConfig.doRainParticles && level.random.nextFloat() < ParticleRainConfig.RainOptions.density / 100F) {
-                level.addParticle(ParticleRainClient.RAIN, x, y, z, 0, 0, 0);
+                level.addParticle(ParticleRegistry.RAIN.get(), x, y, z, 0, 0, 0);
             }
         } else if (precipitation == Precipitation.SNOW && ParticleRainConfig.doSnowParticles) {
             if (level.random.nextFloat() < ParticleRainConfig.SnowOptions.density / 100F) {
-                level.addParticle(ParticleRainClient.SNOW, x, y, z, 0, 0, 0);
+                level.addParticle(ParticleRegistry.SNOW.get(), x, y, z, 0, 0, 0);
             }
         } else if (doesThisBlockHaveDustBlowing(precipitation, level, BlockPos.containing(x, y, z), biome)) {
             if (ParticleRainConfig.SandOptions.spawnOnGround) y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) x, (int) z);
             if (ParticleRainConfig.doSandParticles) {
                 if (level.random.nextFloat() < ParticleRainConfig.SandOptions.density / 100F) {
-                    level.addParticle(ParticleRainClient.DUST, x, y, z, 0, 0, 0);
+                    level.addParticle(ParticleRegistry.DUST.get(), x, y, z, 0, 0, 0);
                 }
             }
             if (ParticleRainConfig.doShrubParticles) {
                 if (level.random.nextFloat() < ParticleRainConfig.ShrubOptions.density / 100F) {
-                    level.addParticle(ParticleRainClient.SHRUB, x, y, z, 0, 0, 0);
+                    level.addParticle(ParticleRegistry.SHRUB.get(), x, y, z, 0, 0, 0);
                 }
             }
         }
@@ -104,9 +104,9 @@ public final class WeatherParticleSpawner {
         if (precipitation == Precipitation.RAIN && ParticleRainConfig.doRainSounds) {
             return above ? SoundEvents.WEATHER_RAIN_ABOVE : SoundEvents.WEATHER_RAIN;
         } else if (precipitation == Precipitation.SNOW && ParticleRainConfig.doSnowSounds) {
-            return above ? ParticleRainClient.WEATHER_SNOW_ABOVE : ParticleRainClient.WEATHER_SNOW;
+            return above ? ParticleRegistry.WEATHER_SNOW_ABOVE.get() : ParticleRegistry.WEATHER_SNOW.get();
         } else if (doesThisBlockHaveDustBlowing(precipitation, Minecraft.getInstance().level, blockPos, biome) && ParticleRainConfig.doSandSounds) {
-            return above ? ParticleRainClient.WEATHER_SANDSTORM_ABOVE : ParticleRainClient.WEATHER_SANDSTORM;
+            return above ? ParticleRegistry.WEATHER_SANDSTORM_ABOVE.get() : ParticleRegistry.WEATHER_SANDSTORM.get();
         }
         return null;
     }

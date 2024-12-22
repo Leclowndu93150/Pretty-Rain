@@ -42,21 +42,6 @@ public class ParticleRainClient {
     public static final String MODID = "particlerain";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static SimpleParticleType RAIN;
-    public static SimpleParticleType SNOW;
-    public static SimpleParticleType DUST_MOTE;
-    public static SimpleParticleType DUST;
-    public static SimpleParticleType FOG;
-    public static SimpleParticleType GROUND_FOG;
-    public static SimpleParticleType SHRUB;
-    public static SimpleParticleType RIPPLE;
-    public static SimpleParticleType STREAK;
-
-    public static SoundEvent WEATHER_SNOW;
-    public static SoundEvent WEATHER_SNOW_ABOVE;
-    public static SoundEvent WEATHER_SANDSTORM;
-    public static SoundEvent WEATHER_SANDSTORM_ABOVE;
-
     public static int particleCount;
     public static int fogCount;
 
@@ -73,15 +58,15 @@ public class ParticleRainClient {
     }
 
     private void registerParticleFactories(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(RAIN, RainParticle.DefaultFactory::new);
-        event.registerSpriteSet(SNOW, SnowParticle.DefaultFactory::new);
-        event.registerSpriteSet(DUST_MOTE, DustMoteParticle.DefaultFactory::new);
-        event.registerSpriteSet(DUST, DustParticle.DefaultFactory::new);
-        event.registerSpriteSet(SHRUB, ShrubParticle.DefaultFactory::new);
-        event.registerSpriteSet(FOG, FogParticle.DefaultFactory::new);
-        event.registerSpriteSet(GROUND_FOG, GroundFogParticle.DefaultFactory::new);
-        event.registerSpriteSet(RIPPLE, RippleParticle.DefaultFactory::new);
-        event.registerSpriteSet(STREAK, StreakParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.RAIN.get(), RainParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.SNOW.get(), SnowParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.DUST_MOTE.get(), DustMoteParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.DUST.get(), DustParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.SHRUB.get(), ShrubParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.FOG.get(), FogParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.GROUND_FOG.get(), GroundFogParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.RIPPLE.get(), RippleParticle.DefaultFactory::new);
+        event.registerSpriteSet(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
     }
 
     private void registerClientCommands(RegisterClientCommandsEvent event) {

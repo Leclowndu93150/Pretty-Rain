@@ -123,6 +123,14 @@ public class ParticleRainConfig {
     private static final ModConfigSpec.DoubleValue GROUND_FOG_SIZE = BUILDER
             .defineInRange("groundFog.size", 8.0, 0.0, Double.MAX_VALUE);
 
+    // Sound toggles
+    private static final ModConfigSpec.BooleanValue DO_RAIN_SOUNDS = BUILDER
+            .define("doRainSounds", true);
+    private static final ModConfigSpec.BooleanValue DO_SNOW_SOUNDS = BUILDER
+            .define("doSnowSounds", true);
+    private static final ModConfigSpec.BooleanValue DO_SAND_SOUNDS = BUILDER
+            .define("doSandSounds", true);
+
     // Additional settings
     private static final ModConfigSpec.BooleanValue RENDER_VANILLA_WEATHER = BUILDER
             .define("renderVanillaWeather", false);
@@ -243,11 +251,9 @@ public class ParticleRainConfig {
         doFogParticles = DO_FOG_PARTICLES.get();
         doGroundFogParticles = DO_GROUND_FOG_PARTICLES.get();
 
-        /*
         doRainSounds = DO_RAIN_SOUNDS.get();
         doSnowSounds = DO_SNOW_SOUNDS.get();
         doSandSounds = DO_SAND_SOUNDS.get();
-         */
 
         rippleResolution = RIPPLE_RESOLUTION.get();
         useResourcepackResolution = USE_RESOURCEPACK_RESOLUTION.get();
