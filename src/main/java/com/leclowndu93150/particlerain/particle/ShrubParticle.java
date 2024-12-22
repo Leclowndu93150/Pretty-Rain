@@ -10,6 +10,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -18,12 +19,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.AxisAngle4f;
 import org.joml.Math;
 import org.joml.Quaternionf;
@@ -41,25 +44,36 @@ public class ShrubParticle extends WeatherParticle {
         this.gravity = ParticleRainConfig.ShrubOptions.gravity;
         this.xd = ParticleRainConfig.SandOptions.windStrength;
         this.zd = ParticleRainConfig.SandOptions.windStrength;
-        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F; //otherwise they get stuck and despawn for some reason >:?
+        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F;
 
         ItemStack itemStack = new ItemStack(Items.DEAD_BUSH);
+        ItemStackRenderState renderState = new ItemStackRenderState();
 
         BlockState blockState = level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.pos));
         if (blockState.is(BlockTags.SWORD_EFFICIENT)) {
             if (!blockState.is(BlockTags.CROPS)) {
                 itemStack = blockState.getBlock().asItem().getDefaultInstance();
-                //TODO: make this work
-                TextureAtlasSprite particleIcon = Minecraft.getInstance().getModelManager().getModel(modelLocation).getParticleIcon();
+
+                Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                        renderState,
+                        itemStack,
+                        ItemDisplayContext.NONE,
+                        false,
+                        level,
+                        null,
+                        0
+                );
+
+                TextureAtlasSprite particleIcon = renderState.layers[0].model.getParticleIcon();
+
                 try {
-                    //bakedQuad.hasTint is always true and i cant find anything else so i guess were gonna do some bullshit >:[
-                    ResourceLocation resourceLocation = ResourceLocation.parse(particleIcon.contents().name().getNamespace() + ":models/" + particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
+                    ResourceLocation resourceLocation = ResourceLocation.parse(particleIcon.contents().name().getNamespace() + ":models/" +
+                            particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
                     Resource resource = Minecraft.getInstance().getResourceManager().getResourceOrThrow(resourceLocation);
                     String string;
                     try (InputStream inputStream = resource.open()) {
                         string = new String(inputStream.readAllBytes());
                     }
-                    // works for most items
                     if (string.contains("tint")) {
                         final int colorInt = BiomeColors.getAverageFoliageColor(level, this.pos);
                         Color color = new Color(colorInt);
@@ -73,8 +87,8 @@ public class ShrubParticle extends WeatherParticle {
             if (level.random.nextFloat() < 0.9) this.remove();
         }
 
-        //TODO: make this work
-        this.setSprite(Minecraft.getInstance().getModelManager().getModel(modelLocation).getParticleIcon());
+        Minecraft.getInstance().getItemModelResolver().updateForTopItem(renderState, itemStack, ItemDisplayContext.NONE, false, level, null, 0);
+        this.setSprite(renderState.layers[0].model.getParticleIcon());
     }
 
     @Override
