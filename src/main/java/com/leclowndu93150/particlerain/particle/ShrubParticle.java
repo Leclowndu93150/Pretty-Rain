@@ -11,7 +11,9 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.BlockTags;
@@ -47,7 +49,8 @@ public class ShrubParticle extends WeatherParticle {
         if (blockState.is(BlockTags.SWORD_EFFICIENT)) {
             if (!blockState.is(BlockTags.CROPS)) {
                 itemStack = blockState.getBlock().asItem().getDefaultInstance();
-                final TextureAtlasSprite particleIcon = Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, null, 0).getParticleIcon();
+                //TODO: make this work
+                TextureAtlasSprite particleIcon = Minecraft.getInstance().getModelManager().getModel(modelLocation).getParticleIcon();
                 try {
                     //bakedQuad.hasTint is always true and i cant find anything else so i guess were gonna do some bullshit >:[
                     ResourceLocation resourceLocation = ResourceLocation.parse(particleIcon.contents().name().getNamespace() + ":models/" + particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
@@ -70,7 +73,8 @@ public class ShrubParticle extends WeatherParticle {
             if (level.random.nextFloat() < 0.9) this.remove();
         }
 
-        this.setSprite(Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, null, 0).getParticleIcon());
+        //TODO: make this work
+        this.setSprite(Minecraft.getInstance().getModelManager().getModel(modelLocation).getParticleIcon());
     }
 
     @Override

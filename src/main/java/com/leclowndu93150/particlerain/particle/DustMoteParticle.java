@@ -24,7 +24,8 @@ public class DustMoteParticle extends WeatherParticle {
         this.zd = ParticleRainConfig.SandOptions.windStrength;
         this.gravity = ParticleRainConfig.SandOptions.gravity;
 
-        final Color color = new Color(level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, y, z)).below()).getBlock().defaultMapColor().calculateRGBColor(MapColor.Brightness.NORMAL));
+        final Color color = new Color(level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, y, z)).below()).getBlock().defaultMapColor().calculateARGBColor(MapColor.Brightness.NORMAL));
+        this.alpha = (float)color.getAlpha() / 255;
         this.bCol = (float)color.getRed() / 255;
         this.rCol = (float)color.getBlue() / 255;
         this.gCol = (float)color.getGreen() / 255;

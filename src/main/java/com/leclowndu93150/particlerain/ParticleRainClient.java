@@ -11,14 +11,10 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -177,13 +173,13 @@ public class ParticleRainClient {
     }
 
     private static void drawCirclePixel(int xc, int yc, int x, int y, NativeImage img, int col) {
-        img.setPixelRGBA(xc + x, yc + y, col);
-        img.setPixelRGBA(xc - x, yc + y, col);
-        img.setPixelRGBA(xc + x, yc - y, col);
-        img.setPixelRGBA(xc - x, yc - y, col);
-        img.setPixelRGBA(xc + y, yc + x, col);
-        img.setPixelRGBA(xc - y, yc + x, col);
-        img.setPixelRGBA(xc + y, yc - x, col);
-        img.setPixelRGBA(xc - y, yc - x, col);
+        img.setPixel(xc + x, yc + y, col);
+        img.setPixel(xc - x, yc + y, col);
+        img.setPixel(xc + x, yc - y, col);
+        img.setPixel(xc - x, yc - y, col);
+        img.setPixel(xc + y, yc + x, col);
+        img.setPixel(xc - y, yc + x, col);
+        img.setPixel(xc + y, yc - x, col);
+        img.setPixel(xc - y, yc - x, col);
     }
 }
