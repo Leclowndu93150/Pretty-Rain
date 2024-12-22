@@ -15,7 +15,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
 import net.minecraft.world.level.levelgen.Heightmap;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 
 public final class WeatherParticleSpawner {
@@ -112,6 +113,6 @@ public final class WeatherParticleSpawner {
     }
 
     public static boolean doesThisBlockHaveDustBlowing(Precipitation precipitation, ClientLevel level, BlockPos blockPos, Holder<Biome> biome) {
-        return precipitation == Precipitation.NONE && level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).below()).is(TagKey.create(Registries.BLOCK, ResourceLocation.parse(ParticleRainConfig.SandOptions.matchTags))) && biome.value().getBaseTemperature() > 0.25;
+        return precipitation == Precipitation.NONE && level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).below()).is(TagKey.create(Registries.BLOCK, ResourceLocation.tryParse(ParticleRainConfig.SandOptions.matchTags))) && biome.value().getBaseTemperature() > 0.25;
     }
 }

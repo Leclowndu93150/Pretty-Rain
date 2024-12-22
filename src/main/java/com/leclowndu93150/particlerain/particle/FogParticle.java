@@ -16,8 +16,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -70,17 +70,50 @@ public class FogParticle extends WeatherParticle {
         Vector3f localPos = new Vector3f(x, y, z);
 
         // rotate particle around y axis to face player
-        Quaternionf quaternion = Axis.YP.rotation((float) Math.atan2(x, z) + Mth.PI);
+        Quaternionf quaternion = new Quaternionf().rotateY((float) Math.atan2(x, z) + Mth.PI);
         // rotate particle by angle between y axis and camera location
         float yAngle = (float) Math.asin(y / localPos.length());
-        quaternion.rotateX(yAngle);
-        quaternion.rotateZ((float) Math.atan2(x, z));
+        quaternion.rotateX(yAngle)
+                .rotateZ((float) Math.atan2(x, z))
+                .rotateZ(Mth.lerp(f, this.oRoll, this.roll));
+
         // the z rotation doubles up on the -y axis instead of negating it like the positive axis. idk how to fix
         // for now we remove them before it gets to look too weird
         if (yAngle < -1) shouldFadeOut = true;
 
-        quaternion.rotateZ(Mth.lerp(f, this.oRoll, this.roll));
-        this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, f);
+        Vector3f[] corners = new Vector3f[]{
+                new Vector3f(-1.0F, -1.0F, 0.0F),
+                new Vector3f(-1.0F, 1.0F, 0.0F),
+                new Vector3f(1.0F, 1.0F, 0.0F),
+                new Vector3f(1.0F, -1.0F, 0.0F)
+        };
+
+        float scale = this.getQuadSize(f);
+        for (int i = 0; i < 4; i++) {
+            Vector3f corner = corners[i];
+            corner.rotate(quaternion);
+            corner.mul(scale);
+            corner.add(x, y, z);
+        }
+
+        float u0 = this.getU0();
+        float u1 = this.getU1();
+        float v0 = this.getV0();
+        float v1 = this.getV1();
+        int light = this.getLightColor(f);
+
+        vertexConsumer.vertex(corners[0].x(), corners[0].y(), corners[0].z())
+                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
+                .uv2(light).endVertex();
+        vertexConsumer.vertex(corners[1].x(), corners[1].y(), corners[1].z())
+                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
+                .uv2(light).endVertex();
+        vertexConsumer.vertex(corners[2].x(), corners[2].y(), corners[2].z())
+                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
+                .uv2(light).endVertex();
+        vertexConsumer.vertex(corners[3].x(), corners[3].y(), corners[3].z())
+                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
+                .uv2(light).endVertex();
     }
 
     @Override

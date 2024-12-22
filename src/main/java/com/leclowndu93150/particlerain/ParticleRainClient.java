@@ -8,26 +8,23 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceMetadata;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.bus.api.IEventBus;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.joml.Math;
 import org.slf4j.Logger;
 
@@ -45,16 +42,17 @@ public class ParticleRainClient {
     public static int particleCount;
     public static int fogCount;
 
-    public ParticleRainClient(IEventBus modEventBus, ModContainer modContainer) {
+    public ParticleRainClient() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ParticleRegistry.SOUND_EVENTS.register(modEventBus);
         ParticleRegistry.PARTICLE_TYPES.register(modEventBus);
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
-        
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
+
         modEventBus.addListener(this::registerParticleFactories);
-        NeoForge.EVENT_BUS.addListener(this::onClientTick);
-        NeoForge.EVENT_BUS.addListener(this::registerClientCommands);
+        MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+        MinecraftForge.EVENT_BUS.addListener(this::registerClientCommands);
     }
 
     private void registerParticleFactories(RegisterParticleProvidersEvent event) {
@@ -78,10 +76,12 @@ public class ParticleRainClient {
                 }));
     }
 
-    private void onClientTick(ClientTickEvent.Post event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (!minecraft.isPaused() && minecraft.level != null && minecraft.getCameraEntity() != null) {
-            WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTimeNs());
+    private void onClientTick(TickEvent.ClientTickEvent event) {
+        if(event.phase == TickEvent.Phase.END){
+            Minecraft minecraft = Minecraft.getInstance();
+            if (!minecraft.isPaused() && minecraft.level != null && minecraft.getCameraEntity() != null) {
+                WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTimeNs());
+            }
         }
     }
 
@@ -125,7 +125,7 @@ public class ParticleRainClient {
         int size = image.getWidth();
         NativeImage sprite = new NativeImage(size, size, false);
         image.copyRect(sprite, 0, size * segment, 0, 0, size, size, true, true);
-        return new SpriteContents(ResourceLocation.fromNamespaceAndPath(MODID, id + segment), new FrameSize(size, size), sprite, ResourceMetadata.EMPTY);
+        return new SpriteContents(new ResourceLocation(MODID, id + segment), new FrameSize(size, size), sprite, AnimationMetadataSection.EMPTY);
     }
 
     public static double yLevelWindAdjustment(double y) {
@@ -134,7 +134,7 @@ public class ParticleRainClient {
 
     public static int getRippleResolution(List<SpriteContents> contents) {
         if (ParticleRainConfig.useResourcepackResolution) {
-            ResourceLocation resourceLocation = ResourceLocation.withDefaultNamespace("big_smoke_0");
+            ResourceLocation resourceLocation = new ResourceLocation("big_smoke_0");
             for (SpriteContents spriteContents : contents) {
                 if (spriteContents.name().equals(resourceLocation)) {
                     return java.lang.Math.max(spriteContents.width(), 256);
@@ -156,7 +156,7 @@ public class ParticleRainClient {
                 ((color.getGreen() & 0xFF) << 8) |
                 ((color.getBlue() & 0xFF));
         generateBresenhamCircle(image, size, (int) Math.clamp(1, (size / 2F) - 1, radius), colorint);
-        return new SpriteContents(ResourceLocation.fromNamespaceAndPath(MODID, "ripple" + i), new FrameSize(size, size), image, ResourceMetadata.EMPTY);
+        return new SpriteContents(new ResourceLocation(MODID, "ripple" + i), new FrameSize(size, size), image, AnimationMetadataSection.EMPTY);
     }
 
     public static void generateBresenhamCircle(NativeImage image, int imgSize, int radius, int colorint) {

@@ -22,7 +22,7 @@ public abstract class WaterDropParticleMixin extends TextureSheetParticleMixin {
     @Override
     public void pickSprite(SpriteSet spriteSet, CallbackInfo ci) {
         if (ParticleRainConfig.biomeTint) {
-            this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(ResourceLocation.fromNamespaceAndPath(ParticleRainClient.MODID, "splash" + random.nextInt(4))));
+            this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MODID, "splash" + random.nextInt(4))));
             ParticleRainClient.applyWaterTint((TextureSheetParticle) (Object) this, this.level, BlockPos.containing(x, y, z));
         }
     }

@@ -10,8 +10,8 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class SnowParticle extends WeatherParticle {
 
@@ -22,7 +22,7 @@ public class SnowParticle extends WeatherParticle {
         this.quadSize = ParticleRainConfig.SnowOptions.size;
         this.gravity = ParticleRainConfig.SnowOptions.gravity;
         this.yd = -gravity;
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(ResourceLocation.fromNamespaceAndPath(ParticleRainClient.MODID, "snow" + random.nextInt(4))));
+        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MODID, "snow" + random.nextInt(4))));
 
         if (level.isThundering()) {
             this.xd = gravity * ParticleRainConfig.SnowOptions.stormWindStrength;

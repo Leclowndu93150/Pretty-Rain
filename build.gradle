@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
-    id 'net.neoforged.moddev' version '2.0.61-beta'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.+'
 }
 
 version = mod_version
@@ -16,11 +16,11 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 neoForge {
     // Specify the version of NeoForge to use.
-    version = project.neo_version
+    version = "1.20.1-47.3.0"
 
     parchment {
         mappingsVersion = project.parchment_mappings_version

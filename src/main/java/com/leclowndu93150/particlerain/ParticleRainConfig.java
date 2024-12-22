@@ -1,157 +1,157 @@
 package com.leclowndu93150.particlerain;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@EventBusSubscriber(modid = ParticleRainClient.MODID, bus = EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = ParticleRainClient.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ParticleRainConfig {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     // General
-    private static final ModConfigSpec.IntValue MAX_PARTICLE_AMOUNT = BUILDER
+    private static final ForgeConfigSpec.IntValue MAX_PARTICLE_AMOUNT = BUILDER
             .comment("Maximum number of particles allowed")
             .defineInRange("maxParticleAmount", 1500, 0, Integer.MAX_VALUE);
-    private static final ModConfigSpec.IntValue PARTICLE_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue PARTICLE_DENSITY = BUILDER
             .defineInRange("particleDensity", 100, 0, Integer.MAX_VALUE);
-    private static final ModConfigSpec.IntValue PARTICLE_STORM_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue PARTICLE_STORM_DENSITY = BUILDER
             .defineInRange("particleStormDensity", 200, 0, Integer.MAX_VALUE);
-    private static final ModConfigSpec.IntValue PARTICLE_RADIUS = BUILDER
+    private static final ForgeConfigSpec.IntValue PARTICLE_RADIUS = BUILDER
             .defineInRange("particleRadius", 25, 0, Integer.MAX_VALUE);
 
     // Particle toggles
-    private static final ModConfigSpec.BooleanValue DO_RAIN_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_RAIN_PARTICLES = BUILDER
             .define("doRainParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_SPLASH_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SPLASH_PARTICLES = BUILDER
             .define("doSplashParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_SMOKE_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SMOKE_PARTICLES = BUILDER
             .define("doSmokeParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_RIPPLE_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_RIPPLE_PARTICLES = BUILDER
             .define("doRippleParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_STREAK_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_STREAK_PARTICLES = BUILDER
             .define("doStreakParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_SNOW_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SNOW_PARTICLES = BUILDER
             .define("doSnowParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_SAND_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SAND_PARTICLES = BUILDER
             .define("doSandParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_SHRUB_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SHRUB_PARTICLES = BUILDER
             .define("doShrubParticles", true);
-    private static final ModConfigSpec.BooleanValue DO_FOG_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_FOG_PARTICLES = BUILDER
             .define("doFogParticles", false);
-    private static final ModConfigSpec.BooleanValue DO_GROUND_FOG_PARTICLES = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_GROUND_FOG_PARTICLES = BUILDER
             .define("doGroundFogParticles", true);
 
     // Rain options
-    private static final ModConfigSpec.IntValue RAIN_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue RAIN_DENSITY = BUILDER
             .comment("Rain particle density")
             .defineInRange("rain.density", 100, 1, 100);
-    private static final ModConfigSpec.DoubleValue RAIN_GRAVITY = BUILDER
+    private static final ForgeConfigSpec.DoubleValue RAIN_GRAVITY = BUILDER
             .defineInRange("rain.gravity", 1.0, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue RAIN_WIND_STRENGTH = BUILDER
+    private static final ForgeConfigSpec.DoubleValue RAIN_WIND_STRENGTH = BUILDER
             .defineInRange("rain.windStrength", 0.3, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue RAIN_STORM_WIND_STRENGTH = BUILDER
+    private static final ForgeConfigSpec.DoubleValue RAIN_STORM_WIND_STRENGTH = BUILDER
             .defineInRange("rain.stormWindStrength", 0.5, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.IntValue RAIN_OPACITY = BUILDER
+    private static final ForgeConfigSpec.IntValue RAIN_OPACITY = BUILDER
             .defineInRange("rain.opacity", 100, 1, 100);
-    private static final ModConfigSpec.IntValue RAIN_SPLASH_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue RAIN_SPLASH_DENSITY = BUILDER
             .defineInRange("rain.splashDensity", 5, 0, Integer.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue RAIN_SIZE = BUILDER
+    private static final ForgeConfigSpec.DoubleValue RAIN_SIZE = BUILDER
             .defineInRange("rain.size", 2.0, 0.0, Double.MAX_VALUE);
 
     // Snow options
-    private static final ModConfigSpec.IntValue SNOW_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue SNOW_DENSITY = BUILDER
             .defineInRange("snow.density", 40, 1, 100);
-    private static final ModConfigSpec.DoubleValue SNOW_GRAVITY = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SNOW_GRAVITY = BUILDER
             .defineInRange("snow.gravity", 0.08, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SNOW_ROTATION_AMOUNT = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SNOW_ROTATION_AMOUNT = BUILDER
             .defineInRange("snow.rotationAmount", 0.03, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SNOW_STORM_ROTATION_AMOUNT = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SNOW_STORM_ROTATION_AMOUNT = BUILDER
             .defineInRange("snow.stormRotationAmount", 0.05, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SNOW_WIND_STRENGTH = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SNOW_WIND_STRENGTH = BUILDER
             .defineInRange("snow.windStrength", 1.0, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SNOW_STORM_WIND_STRENGTH = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SNOW_STORM_WIND_STRENGTH = BUILDER
             .defineInRange("snow.stormWindStrength", 3.0, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SNOW_SIZE = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SNOW_SIZE = BUILDER
             .defineInRange("snow.size", 2.0, 0.0, Double.MAX_VALUE);
 
     // Ripple options
-    private static final ModConfigSpec.IntValue RIPPLE_RESOLUTION = BUILDER
+    private static final ForgeConfigSpec.IntValue RIPPLE_RESOLUTION = BUILDER
             .defineInRange("ripple.resolution", 16, 4, 256);
-    private static final ModConfigSpec.BooleanValue USE_RESOURCEPACK_RESOLUTION = BUILDER
+    private static final ForgeConfigSpec.BooleanValue USE_RESOURCEPACK_RESOLUTION = BUILDER
             .define("ripple.useResourcepackResolution", true);
 
     // Sand options
-    private static final ModConfigSpec.IntValue SAND_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue SAND_DENSITY = BUILDER
             .defineInRange("sand.density", 80, 1, 100);
-    private static final ModConfigSpec.DoubleValue SAND_GRAVITY = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SAND_GRAVITY = BUILDER
             .defineInRange("sand.gravity", 0.2, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SAND_WIND_STRENGTH = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SAND_WIND_STRENGTH = BUILDER
             .defineInRange("sand.windStrength", 0.3, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SAND_MOTE_SIZE = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SAND_MOTE_SIZE = BUILDER
             .defineInRange("sand.moteSize", 0.1, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SAND_SIZE = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SAND_SIZE = BUILDER
             .defineInRange("sand.size", 2.0, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.BooleanValue SAND_SPAWN_ON_GROUND = BUILDER
+    private static final ForgeConfigSpec.BooleanValue SAND_SPAWN_ON_GROUND = BUILDER
             .define("sand.spawnOnGround", true);
-    private static final ModConfigSpec.ConfigValue<String> SAND_MATCH_TAGS = BUILDER
+    private static final ForgeConfigSpec.ConfigValue<String> SAND_MATCH_TAGS = BUILDER
             .define("sand.matchTags", "minecraft:camel_sand_step_sound_blocks");
 
     // Shrub options
-    private static final ModConfigSpec.IntValue SHRUB_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue SHRUB_DENSITY = BUILDER
             .defineInRange("shrub.density", 2, 1, 100);
-    private static final ModConfigSpec.DoubleValue SHRUB_GRAVITY = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SHRUB_GRAVITY = BUILDER
             .defineInRange("shrub.gravity", 0.2, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SHRUB_ROTATION_AMOUNT = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SHRUB_ROTATION_AMOUNT = BUILDER
             .defineInRange("shrub.rotationAmount", 0.2, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue SHRUB_BOUNCINESS = BUILDER
+    private static final ForgeConfigSpec.DoubleValue SHRUB_BOUNCINESS = BUILDER
             .defineInRange("shrub.bounciness", 0.2, 0.0, Double.MAX_VALUE);
 
     // Fog options
-    private static final ModConfigSpec.IntValue FOG_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue FOG_DENSITY = BUILDER
             .defineInRange("fog.density", 20, 1, 100);
-    private static final ModConfigSpec.DoubleValue FOG_GRAVITY = BUILDER
+    private static final ForgeConfigSpec.DoubleValue FOG_GRAVITY = BUILDER
             .defineInRange("fog.gravity", 0.2, 0.0, Double.MAX_VALUE);
-    private static final ModConfigSpec.DoubleValue FOG_SIZE = BUILDER
+    private static final ForgeConfigSpec.DoubleValue FOG_SIZE = BUILDER
             .defineInRange("fog.size", 0.5, 0.0, Double.MAX_VALUE);
 
     // Ground fog options
-    private static final ModConfigSpec.IntValue GROUND_FOG_DENSITY = BUILDER
+    private static final ForgeConfigSpec.IntValue GROUND_FOG_DENSITY = BUILDER
             .defineInRange("groundFog.density", 20, 1, 100);
-    private static final ModConfigSpec.IntValue GROUND_FOG_SPAWN_HEIGHT = BUILDER
+    private static final ForgeConfigSpec.IntValue GROUND_FOG_SPAWN_HEIGHT = BUILDER
             .defineInRange("groundFog.spawnHeight", 64, 0, 256);
-    private static final ModConfigSpec.DoubleValue GROUND_FOG_SIZE = BUILDER
+    private static final ForgeConfigSpec.DoubleValue GROUND_FOG_SIZE = BUILDER
             .defineInRange("groundFog.size", 8.0, 0.0, Double.MAX_VALUE);
 
     // Sound toggles
-    private static final ModConfigSpec.BooleanValue DO_RAIN_SOUNDS = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_RAIN_SOUNDS = BUILDER
             .define("doRainSounds", true);
-    private static final ModConfigSpec.BooleanValue DO_SNOW_SOUNDS = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SNOW_SOUNDS = BUILDER
             .define("doSnowSounds", true);
-    private static final ModConfigSpec.BooleanValue DO_SAND_SOUNDS = BUILDER
+    private static final ForgeConfigSpec.BooleanValue DO_SAND_SOUNDS = BUILDER
             .define("doSandSounds", true);
 
     // Additional settings
-    private static final ModConfigSpec.BooleanValue RENDER_VANILLA_WEATHER = BUILDER
+    private static final ForgeConfigSpec.BooleanValue RENDER_VANILLA_WEATHER = BUILDER
             .define("renderVanillaWeather", false);
-    private static final ModConfigSpec.BooleanValue TICK_VANILLA_WEATHER = BUILDER
+    private static final ForgeConfigSpec.BooleanValue TICK_VANILLA_WEATHER = BUILDER
             .define("tickVanillaWeather", false);
-    private static final ModConfigSpec.BooleanValue BIOME_TINT = BUILDER
+    private static final ForgeConfigSpec.BooleanValue BIOME_TINT = BUILDER
             .define("biomeTint", true);
-    private static final ModConfigSpec.IntValue TINT_MIX = BUILDER
+    private static final ForgeConfigSpec.IntValue TINT_MIX = BUILDER
             .defineInRange("tintMix", 50, 0, 100);
-    private static final ModConfigSpec.BooleanValue SPAWN_ABOVE_CLOUDS = BUILDER
+    private static final ForgeConfigSpec.BooleanValue SPAWN_ABOVE_CLOUDS = BUILDER
             .define("spawnAboveClouds", false);
-    private static final ModConfigSpec.IntValue CLOUD_HEIGHT = BUILDER
+    private static final ForgeConfigSpec.IntValue CLOUD_HEIGHT = BUILDER
             .defineInRange("cloudHeight", 191, 0, 256);
-    private static final ModConfigSpec.BooleanValue ALWAYS_RAINING = BUILDER
+    private static final ForgeConfigSpec.BooleanValue ALWAYS_RAINING = BUILDER
             .define("alwaysRaining", false);
-    private static final ModConfigSpec.BooleanValue Y_LEVEL_WIND_ADJUSTMENT = BUILDER
+    private static final ForgeConfigSpec.BooleanValue Y_LEVEL_WIND_ADJUSTMENT = BUILDER
             .define("yLevelWindAdjustment", true);
-    private static final ModConfigSpec.BooleanValue SYNC_REGISTRY = BUILDER
+    private static final ForgeConfigSpec.BooleanValue SYNC_REGISTRY = BUILDER
             .define("syncRegistry", true);
 
-    static final ModConfigSpec SPEC = BUILDER.build();
+    static final ForgeConfigSpec SPEC = BUILDER.build();
 
     // Public fields for access
     public static int maxParticleAmount;
