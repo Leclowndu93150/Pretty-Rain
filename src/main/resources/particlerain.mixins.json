@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.leclowndu93150.particlerain.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "particlerain.refmap.json",
+  "mixins": [
+    "RegistrySyncMixin"
+  ],
+  "client": [
+    "DripParticleMixin",
+    "LevelRendererMixin",
+    "SpriteLoaderMixin",
+    "TextureSheetParticleMixin",
+    "WaterDropParticleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
