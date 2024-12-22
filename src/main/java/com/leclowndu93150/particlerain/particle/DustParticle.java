@@ -37,40 +37,7 @@ public class DustParticle extends DustMoteParticle {
 
         Quaternionf quaternion = camera.rotation();
         y = y + Mth.sin((Mth.lerp(tickPercentage, this.age - 1.0F, this.age)) / 20) + 1.5F;
-
-        Vector3f[] corners = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        float scale = this.getQuadSize(tickPercentage);
-        for (int i = 0; i < 4; i++) {
-            Vector3f corner = corners[i];
-            corner.rotate(quaternion);
-            corner.mul(scale);
-            corner.add(x, y, z);
-        }
-
-        float u0 = this.getU0();
-        float u1 = this.getU1();
-        float v0 = this.getV0();
-        float v1 = this.getV1();
-        int light = this.getLightColor(tickPercentage);
-
-        vertexConsumer.vertex(corners[0].x(), corners[0].y(), corners[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[1].x(), corners[1].y(), corners[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[2].x(), corners[2].y(), corners[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[3].x(), corners[3].y(), corners[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
+        this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, tickPercentage);
     }
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
 

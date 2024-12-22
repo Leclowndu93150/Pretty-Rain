@@ -106,84 +106,23 @@ public class ShrubParticle extends WeatherParticle {
 
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickPercentage) {
-        Vec3 camPos = camera.getPosition();
-        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x());
-        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y());
-        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z());
+        Vector3f camPos = camera.getPosition().toVector3f();
+        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x);
+        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y);
+        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z);
 
         final float angle = (float) Math.atan2(this.xd, this.zd);
-        Quaternionf quaternion = new Quaternionf().rotateY(angle);
+        Quaternionf quaternion = new Quaternionf();
+        quaternion.rotateY(angle);
 
-        Quaternionf quat1 = new Quaternionf().rotateY(0);
-        Quaternionf quat2 = new Quaternionf().rotateY(Mth.HALF_PI);
+        Quaternionf quat1 = new Quaternionf(new AxisAngle4f(0, 0, 1, 0));
+        Quaternionf quat2 = new Quaternionf(new AxisAngle4f(Mth.HALF_PI, 0, 1, 0));
         quat1.mul(quaternion).rotateX(Mth.lerp(tickPercentage, this.oRoll, this.roll));
         quat2.mul(quaternion).rotateZ(Mth.lerp(tickPercentage, this.oRoll, this.roll));
         quat1 = this.flipItTurnwaysIfBackfaced(quat1, new Vector3f(x, y, z));
         quat2 = this.flipItTurnwaysIfBackfaced(quat2, new Vector3f(x, y, z));
-
-        Vector3f[] corners1 = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        Vector3f[] corners2 = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        float scale = this.getQuadSize(tickPercentage);
-
-        // Render first quad
-        for (int i = 0; i < 4; i++) {
-            Vector3f corner = corners1[i];
-            corner.rotate(quat1);
-            corner.mul(scale);
-            corner.add(x, y, z);
-        }
-
-        float u0 = this.getU0();
-        float u1 = this.getU1();
-        float v0 = this.getV0();
-        float v1 = this.getV1();
-        int light = this.getLightColor(tickPercentage);
-
-        vertexConsumer.vertex(corners1[0].x(), corners1[0].y(), corners1[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners1[1].x(), corners1[1].y(), corners1[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners1[2].x(), corners1[2].y(), corners1[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners1[3].x(), corners1[3].y(), corners1[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-
-        // Render second quad
-        for (int i = 0; i < 4; i++) {
-            Vector3f corner = corners2[i];
-            corner.rotate(quat2);
-            corner.mul(scale);
-            corner.add(x, y, z);
-        }
-
-        vertexConsumer.vertex(corners2[0].x(), corners2[0].y(), corners2[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners2[1].x(), corners2[1].y(), corners2[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners2[2].x(), corners2[2].y(), corners2[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners2[3].x(), corners2[3].y(), corners2[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
+        this.renderRotatedQuad(vertexConsumer, quat1, x, y, z, tickPercentage);
+        this.renderRotatedQuad(vertexConsumer, quat2, x, y, z, tickPercentage);
     }
 
     @OnlyIn(Dist.CLIENT)

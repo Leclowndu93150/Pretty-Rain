@@ -72,40 +72,9 @@ public class StreakParticle extends WeatherParticle {
         float y = (float) (Mth.lerp(f, this.yo, this.y) - camPos.y());
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
 
-        Quaternionf quaternion = new Quaternionf().rotateY((float) Math.toRadians(this.roll));
-        Vector3f[] corners = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        float scale = this.getQuadSize(f);
-        for (int i = 0; i < 4; i++) {
-            Vector3f corner = corners[i];
-            corner.rotate(quaternion);
-            corner.mul(scale);
-            corner.add(x, y + 0.25F, z);
-        }
-
-        float u0 = this.getU0();
-        float u1 = this.getU1();
-        float v0 = this.getV0();
-        float v1 = this.getV1();
-        int light = this.getLightColor(f);
-
-        vertexConsumer.vertex(corners[0].x(), corners[0].y(), corners[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[1].x(), corners[1].y(), corners[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[2].x(), corners[2].y(), corners[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[3].x(), corners[3].y(), corners[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
+        Quaternionf quaternion = new Quaternionf(new AxisAngle4d(this.roll, 0, 1, 0));
+        this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
+        this.renderRotatedQuad(vertexConsumer, quaternion, x, y + 0.25F, z, f);
     }
 
     @Override

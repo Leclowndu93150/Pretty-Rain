@@ -4,6 +4,7 @@ import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRainConfig;
 import com.leclowndu93150.particlerain.ParticleRegistry;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -117,52 +118,24 @@ public class RainParticle extends WeatherParticle {
 
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickPercentage) {
-        Vec3 camPos = camera.getPosition();
-        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x());
-        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y());
-        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z());
+        Vector3f camPos = camera.getPosition().toVector3f();
+        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x);
+        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y);
+        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z);
 
+        // angle particle along axis of velocity
         Vector3f delta = new Vector3f((float) this.xd, (float) this.yd, (float) this.zd);
-        final float angle = (float) Math.acos(delta.normalize().y);
+        final float angle = Math.acos(delta.normalize().y);
         Vector3f axis = new Vector3f(-delta.z(), 0, delta.x()).normalize();
-        Quaternionf quaternion = new Quaternionf().rotateAxis(-angle, axis.x(), axis.y(), axis.z());
+        Quaternionf quaternion = new Quaternionf(new AxisAngle4f(-angle, axis));
 
-        quaternion.mul(new Quaternionf().rotateY(this.roll));
+        // rotate particle to face camera
+        //quaternion.mul(Axis.YN.rotation(Math.atan2(x, z) + Mth.HALF_PI));
+        // idk how to translate this to work with the angled axis, using as-is results in weird rotation
+        // for now the rotation is calculated once when the particle spawns, which looks good enough
+        quaternion.mul(Axis.YN.rotation(this.roll));
         quaternion = this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
-
-        Vector3f[] corners = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        float scale = this.getQuadSize(tickPercentage);
-        for (int i = 0; i < 4; i++) {
-            Vector3f corner = corners[i];
-            corner.rotate(quaternion);
-            corner.mul(scale);
-            corner.add(x, y, z);
-        }
-
-        float u0 = this.getU0();
-        float u1 = this.getU1();
-        float v0 = this.getV0();
-        float v1 = this.getV1();
-        int light = this.getLightColor(tickPercentage);
-
-        vertexConsumer.vertex(corners[0].x(), corners[0].y(), corners[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[1].x(), corners[1].y(), corners[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[2].x(), corners[2].y(), corners[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        vertexConsumer.vertex(corners[3].x(), corners[3].y(), corners[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
+        this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, tickPercentage);
     }
 
     @Override
