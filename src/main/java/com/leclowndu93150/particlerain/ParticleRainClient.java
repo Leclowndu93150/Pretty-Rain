@@ -61,24 +61,9 @@ public class ParticleRainClient {
     public static int fogCount;
 
     public ParticleRainClient(IEventBus modEventBus, ModContainer modContainer) {
-        RAIN = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "rain"), new SimpleParticleType(true));
-        SNOW = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "snow"), new SimpleParticleType(true));
-        DUST_MOTE = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "dust_mote"), new SimpleParticleType(true));
-        DUST = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "dust"), new SimpleParticleType(true));
-        SHRUB = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "shrub"), new SimpleParticleType(true));
-        FOG = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "fog"), new SimpleParticleType(true));
-        GROUND_FOG = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "ground_fog"), new SimpleParticleType(true));
-        RIPPLE = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "ripple"), new SimpleParticleType(true));
-        STREAK = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "streak"), new SimpleParticleType(true));
 
-        WEATHER_SNOW = Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(MODID, "weather.snow"),
-                SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "weather.snow")));
-        WEATHER_SNOW_ABOVE = Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(MODID, "weather.snow.above"),
-                SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "weather.snow.above")));
-        WEATHER_SANDSTORM = Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(MODID, "weather.sandstorm"),
-                SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "weather.sandstorm")));
-        WEATHER_SANDSTORM_ABOVE = Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(MODID, "weather.sandstorm.above"),
-                SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, "weather.sandstorm.above")));
+        ParticleRegistry.SOUND_EVENTS.register(modEventBus);
+        ParticleRegistry.PARTICLE_TYPES.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
         
