@@ -73,7 +73,7 @@ public abstract class SpriteLoaderMixin {
                 for (int i = 0; i < 4; i++) {
                     NativeImage splashImage = null;
                     try {
-                        splashImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft", "textures/particle/splash_" + i + ".png"));
+                        splashImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/particle/splash_" + i + ".png"));
                         splashImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
                     } catch (IOException e) {
                         e.printStackTrace();
