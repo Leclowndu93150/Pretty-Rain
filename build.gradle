@@ -96,8 +96,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
-    jarJar("io.github.llamalad7:mixinextras-common:0.4.1")
-    implementation("io.github.llamalad7:mixinextras-common:0.4.1")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-common:0.4.1"))
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
