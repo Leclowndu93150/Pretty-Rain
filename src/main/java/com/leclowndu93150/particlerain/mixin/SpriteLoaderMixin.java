@@ -42,8 +42,8 @@ public abstract class SpriteLoaderMixin {
             NativeImage rainImage = null;
             NativeImage snowImage = null;
             try {
-                rainImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/environment/rain.png"));
-                snowImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/environment/snow.png"));
+                rainImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft","textures/environment/rain.png"));
+                snowImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft","textures/environment/snow.png"));
                 if (ParticleRainConfig.biomeTint) {
                     rainImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
                 }

@@ -90,6 +90,7 @@ public abstract class WeatherParticle extends TextureSheetParticle {
     }
 
     public void renderRotatedQuad(VertexConsumer vertexConsumer, Quaternionf quaternion, float x, float y, float z, float tickPercentage) {
+        quaternion.rotateY(Mth.PI);
         float quadSize = this.getQuadSize(tickPercentage);
         float u0 = this.getU0();
         float u1 = this.getU1();

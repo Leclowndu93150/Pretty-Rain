@@ -95,7 +95,7 @@ public class ParticleRainConfig {
     private static final ForgeConfigSpec.BooleanValue SAND_SPAWN_ON_GROUND = BUILDER
             .define("sand.spawnOnGround", true);
     private static final ForgeConfigSpec.ConfigValue<String> SAND_MATCH_TAGS = BUILDER
-            .define("sand.matchTags", "minecraft:camel_sand_step_sound_blocks");
+            .define("sand.matchTags", "minecraft:sand");
 
     // Shrub options
     private static final ForgeConfigSpec.IntValue SHRUB_DENSITY = BUILDER
