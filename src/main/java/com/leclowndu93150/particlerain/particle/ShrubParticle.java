@@ -105,6 +105,11 @@ public class ShrubParticle extends WeatherParticle {
     }
 
     @Override
+    public com.leclowndu93150.particlerain.rendering.ParticleRenderType getParticleType() {
+        return com.leclowndu93150.particlerain.rendering.ParticleRenderType.SHRUB;
+    }
+
+    @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickPercentage) {
         Vector3f camPos = camera.getPosition().toVector3f();
         float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x);
