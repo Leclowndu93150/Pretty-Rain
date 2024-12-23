@@ -48,9 +48,9 @@ public class ParticleRainClient {
         ParticleRegistry.SOUND_EVENTS.register(modEventBus);
         ParticleRegistry.PARTICLE_TYPES.register(modEventBus);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
-
         modEventBus.addListener(this::registerParticleFactories);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerClientCommands);
     }
@@ -125,7 +125,7 @@ public class ParticleRainClient {
         int size = image.getWidth();
         NativeImage sprite = new NativeImage(size, size, false);
         image.copyRect(sprite, 0, size * segment, 0, 0, size, size, true, true);
-        return new SpriteContents(new ResourceLocation(MODID, id + segment), new FrameSize(size, size), sprite, AnimationMetadataSection.EMPTY);
+        return new SpriteContents(new ResourceLocation(ParticleRainClient.MODID, id + segment), new FrameSize(size, size), sprite, AnimationMetadataSection.EMPTY);
     }
 
     public static double yLevelWindAdjustment(double y) {

@@ -3,11 +3,6 @@ plugins {
     id 'maven-publish'
     id 'idea'
     id 'net.neoforged.moddev.legacyforge' version '2.0.+'
-    id "com.github.johnrengelman.shadow" version "8.1.0"
-}
-
-configurations {
-    implementation.extendsFrom shadow
 }
 
 version = mod_version
@@ -101,14 +96,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
-    //implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.4.1"))
-    shadow(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-}
-
-shadowJar {
-    configurations = [project.configurations.shadow]
-    relocate("com.llamalad7.mixinextras", "com.leclowndu93150.particlerain.mixinextras")
-    mergeServiceFiles() // Very important!
+    jarJar("io.github.llamalad7:mixinextras-common:0.4.1")
+    implementation("io.github.llamalad7:mixinextras-common:0.4.1")
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 mixin {

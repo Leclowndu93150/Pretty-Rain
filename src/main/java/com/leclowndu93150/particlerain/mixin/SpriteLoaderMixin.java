@@ -40,7 +40,7 @@ public abstract class SpriteLoaderMixin {
             at = @At(value = "NEW", args = "class=net/minecraft/client/renderer/texture/Stitcher")
     )
     private Stitcher<SpriteContents> registerWeatherParticles(Stitcher<SpriteContents> stitcher) {
-        if (this.location.equals(new ResourceLocation("textures/atlas/particles.png"))) {
+        if (this.location.equals(ResourceLocation.tryParse("textures/atlas/particles.png"))) {
             // resource reload clears all particles. we can just reset the counter here instead of registering a listener.
             ParticleRainClient.particleCount = 0;
             ParticleRainClient.fogCount = 0;
@@ -49,8 +49,8 @@ public abstract class SpriteLoaderMixin {
             NativeImage rainImage = null;
             NativeImage snowImage = null;
             try {
-                rainImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/environment/rain.png"));
-                snowImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/environment/snow.png"));
+                rainImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft","textures/environment/rain.png"));
+                snowImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft","textures/environment/snow.png"));
                 if (ParticleRainConfig.biomeTint) rainImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -73,7 +73,7 @@ public abstract class SpriteLoaderMixin {
                 for (int i = 0; i < 4; i++) {
                     NativeImage splashImage = null;
                     try {
-                        splashImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/particle/splash_" + i + ".png"));
+                        splashImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft", "textures/particle/splash_" + i + ".png"));
                         splashImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
                     } catch (IOException e) {
                         e.printStackTrace();
