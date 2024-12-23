@@ -1,6 +1,9 @@
 package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainConfig;
+import com.leclowndu93150.particlerain.rendering.ParticleManager;
+import com.leclowndu93150.particlerain.rendering.ParticleRenderData;
+import com.leclowndu93150.particlerain.rendering.ParticleRenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,6 +14,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class DustParticle extends DustMoteParticle {
 
@@ -28,16 +32,31 @@ public class DustParticle extends DustMoteParticle {
         }
     }
     @Override
-    public void render(VertexConsumer vertexConsumer, Camera camera, float tickPercentage) {
+    public void render(VertexConsumer consumer, Camera camera, float partialTick) {
         Vec3 camPos = camera.getPosition();
-        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x());
-        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y());
-        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z());
+        Vector3f pos = new Vector3f(
+                (float) (Mth.lerp(partialTick, this.xo, this.x) - camPos.x()),
+                (float) (Mth.lerp(partialTick, this.yo, this.y) - camPos.y() + Mth.sin((Mth.lerp(partialTick, this.age - 1.0F, this.age)) / 20) + 1.5F),
+                (float) (Mth.lerp(partialTick, this.zo, this.z) - camPos.z())
+        );
 
-        Quaternionf quaternion = camera.rotation();
-        y = y + Mth.sin((Mth.lerp(tickPercentage, this.age - 1.0F, this.age)) / 20) + 1.5F;
-        this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, tickPercentage);
+        ParticleRenderData data = new ParticleRenderData(
+                pos,
+                this.getQuadSize(partialTick),
+                this.getU0(), this.getV0(),
+                this.getU1(), this.getV1(),
+                this.getLightColor(partialTick),
+                this.rCol, this.gCol, this.bCol, this.alpha
+        );
+
+        ParticleManager.instance.addParticle(this, data);
     }
+
+    @Override
+    public ParticleRenderType getParticleType() {
+        return ParticleRenderType.DUST;
+    }
+
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
 
         private final SpriteSet provider;
