@@ -2,7 +2,6 @@ package com.leclowndu93150.particlerain.mixin;
 
 import com.leclowndu93150.particlerain.ParticleRainConfig;
 import com.leclowndu93150.particlerain.WeatherParticleSpawner;
-import com.leclowndu93150.particlerain.rendering.ParticleManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -75,7 +74,6 @@ public class LevelRendererMixin {
     @Inject(method = "renderSnowAndRain", at = @At("HEAD"), cancellable = true)
     public void renderWeather(LightTexture lightTexture, float partialTicks, double x, double y, double z, CallbackInfo ci) {
         if (!ParticleRainConfig.renderVanillaWeather) {
-            ParticleManager.instance.renderParticles(this.minecraft.gameRenderer.getMainCamera());
             ci.cancel();
         }
     }

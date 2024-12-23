@@ -143,11 +143,6 @@ public class RainParticle extends WeatherParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    @Override
-    public com.leclowndu93150.particlerain.rendering.ParticleRenderType getParticleType() {
-        return com.leclowndu93150.particlerain.rendering.ParticleRenderType.RAIN;
-    }
-
     @OnlyIn(Dist.CLIENT)
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
 

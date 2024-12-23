@@ -2,12 +2,8 @@ package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRainConfig;
-import com.leclowndu93150.particlerain.rendering.ParticleManager;
-import com.leclowndu93150.particlerain.rendering.ParticleRenderData;
-import com.leclowndu93150.particlerain.rendering.ParticleRenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.TextureSheetParticle;
@@ -119,29 +115,5 @@ public abstract class WeatherParticle extends TextureSheetParticle {
         vertexConsumer.vertex((double)vector3fs[1].x(), (double)vector3fs[1].y(), (double)vector3fs[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
         vertexConsumer.vertex((double)vector3fs[2].x(), (double)vector3fs[2].y(), (double)vector3fs[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
         vertexConsumer.vertex((double)vector3fs[3].x(), (double)vector3fs[3].y(), (double)vector3fs[3].z()).uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
-    }
-
-    @Override
-    public void render(VertexConsumer consumer, Camera camera, float partialTick) {
-        Vector3f pos = new Vector3f(
-                (float)Mth.lerp(partialTick, this.xo, this.x),
-                (float)Mth.lerp(partialTick, this.yo, this.y),
-                (float)Mth.lerp(partialTick, this.zo, this.z)
-        );
-
-        ParticleRenderData data = new ParticleRenderData(
-                pos,
-                this.getQuadSize(partialTick),
-                this.getU0(), this.getV0(),
-                this.getU1(), this.getV1(),
-                this.getLightColor(partialTick),
-                this.rCol, this.gCol, this.bCol, this.alpha
-        );
-
-        ParticleManager.instance.addParticle(this, data);
-    }
-
-    public ParticleRenderType getParticleType() {
-        return ParticleRenderType.RAIN;
     }
 }
