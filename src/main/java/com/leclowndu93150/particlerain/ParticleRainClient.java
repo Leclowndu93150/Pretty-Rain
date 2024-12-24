@@ -11,18 +11,15 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -44,7 +41,6 @@ public class ParticleRainClient {
 
     public static int particleCount;
     public static int fogCount;
-
     public ParticleRainClient(IEventBus modEventBus, ModContainer modContainer) {
 
         ParticleRegistry.SOUND_EVENTS.register(modEventBus);
@@ -54,6 +50,7 @@ public class ParticleRainClient {
         
         modEventBus.addListener(this::registerParticleFactories);
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
+        NeoForge.EVENT_BUS.addListener(this::onJoin);
         NeoForge.EVENT_BUS.addListener(this::registerClientCommands);
     }
 
@@ -76,6 +73,11 @@ public class ParticleRainClient {
                     ctx.getSource().sendSystemMessage(Component.literal(String.format("Fog density: %d/%d", fogCount, ParticleRainConfig.groundFogDensity)));
                     return 0;
                 }));
+    }
+
+    private void onJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        particleCount = 0;
+        fogCount = 0;
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
