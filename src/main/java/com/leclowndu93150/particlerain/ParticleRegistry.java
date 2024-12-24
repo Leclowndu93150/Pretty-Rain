@@ -5,13 +5,16 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ParticleRegistry {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
             DeferredRegister.create(Registries.PARTICLE_TYPE, ParticleRainClient.MODID);
-    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, ParticleRainClient.MODID);
+
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
+            DeferredRegister.create(Registries.SOUND_EVENT, ParticleRainClient.MODID);
 
     public static final RegistryObject<SimpleParticleType> RAIN = PARTICLE_TYPES.register("rain",
             () -> new SimpleParticleType(true));
@@ -40,4 +43,9 @@ public class ParticleRegistry {
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MODID, "weather.sandstorm")));
     public static final RegistryObject<SoundEvent> WEATHER_SANDSTORM_ABOVE = SOUND_EVENTS.register("weather.sandstorm.above",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MODID, "weather.sandstorm.above")));
+
+    public static void register(IEventBus modEventBus) {
+        PARTICLE_TYPES.register(modEventBus);
+        SOUND_EVENTS.register(modEventBus);
+    }
 }

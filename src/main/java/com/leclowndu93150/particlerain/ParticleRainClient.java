@@ -37,7 +37,7 @@ import java.util.function.IntUnaryOperator;
 @Mod(ParticleRainClient.MODID)
 public class ParticleRainClient {
     public static final String MODID = "particlerain";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public static int particleCount;
     public static int fogCount;
@@ -45,8 +45,7 @@ public class ParticleRainClient {
     public ParticleRainClient() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ParticleRegistry.SOUND_EVENTS.register(modEventBus);
-        ParticleRegistry.PARTICLE_TYPES.register(modEventBus);
+        ParticleRegistry.register(modEventBus);
 
         modEventBus.addListener(this::registerParticleFactories);
 
@@ -95,12 +94,23 @@ public class ParticleRainClient {
     };
 
     public static void applyWaterTint(TextureSheetParticle particle, ClientLevel clientLevel, BlockPos blockPos) {
-        final Color waterColor = new Color(BiomeColors.getAverageWaterColor(clientLevel, blockPos));
-        final Color fogColor = new Color(clientLevel.getBiome(blockPos).value().getFogColor());
-        float rCol = (Mth.lerp(ParticleRainConfig.tintMix / 100F, waterColor.getRed(), fogColor.getRed()) / 255F);
-        float gCol = (Mth.lerp(ParticleRainConfig.tintMix / 100F, waterColor.getGreen(), fogColor.getGreen()) / 255F);
-        float bCol = (Mth.lerp(ParticleRainConfig.tintMix / 100F, waterColor.getBlue(), fogColor.getBlue()) / 255F);
-        particle.setColor(rCol, gCol, bCol);
+        final int waterColor = BiomeColors.getAverageWaterColor(clientLevel, blockPos);
+        final int fogColor = clientLevel.getBiome(blockPos).value().getFogColor();
+
+        float waterR = (waterColor >> 16 & 255) / 255.0F;
+        float waterG = (waterColor >> 8 & 255) / 255.0F;
+        float waterB = (waterColor & 255) / 255.0F;
+
+        float fogR = (fogColor >> 16 & 255) / 255.0F;
+        float fogG = (fogColor >> 8 & 255) / 255.0F;
+        float fogB = (fogColor & 255) / 255.0F;
+
+        float mix = ParticleRainConfig.tintMix / 100F;
+        particle.setColor(
+                Mth.lerp(mix, waterR, fogR),
+                Mth.lerp(mix, waterG, fogG),
+                Mth.lerp(mix, waterB, fogB)
+        );
     }
 
     public static NativeImage loadTexture(ResourceLocation resourceLocation) throws IOException {
