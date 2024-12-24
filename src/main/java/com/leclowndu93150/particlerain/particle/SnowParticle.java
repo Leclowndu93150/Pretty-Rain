@@ -1,7 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
-import com.leclowndu93150.particlerain.ParticleRainConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -13,23 +12,24 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+
 public class SnowParticle extends WeatherParticle {
 
     float rotationAmount;
 
     protected SnowParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
-        this.quadSize = ParticleRainConfig.SnowOptions.size;
-        this.gravity = ParticleRainConfig.SnowOptions.gravity;
+        this.quadSize = ParticleRainClient.config.snow.size;
+        this.gravity = ParticleRainClient.config.snow.gravity;
         this.yd = -gravity;
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MODID, "snow" + random.nextInt(4))));
+        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "snow" + random.nextInt(4))));
 
         if (level.isThundering()) {
-            this.xd = gravity * ParticleRainConfig.SnowOptions.stormWindStrength;
+            this.xd = gravity * ParticleRainClient.config.snow.stormWindStrength;
         } else {
-            this.xd = gravity * ParticleRainConfig.SnowOptions.windStrength;
+            this.xd = gravity * ParticleRainClient.config.snow.windStrength;
         }
-        if (ParticleRainConfig.yLevelWindAdjustment) {
+        if (ParticleRainClient.config.yLevelWindAdjustment) {
             this.xd = this.xd * ParticleRainClient.yLevelWindAdjustment(y);
         }
         this.zd = this.xd;
@@ -44,7 +44,7 @@ public class SnowParticle extends WeatherParticle {
     public void tick() {
         super.tick();
         this.oRoll = this.roll;
-        this.roll = this.oRoll + (level.isThundering() ? ParticleRainConfig.SnowOptions.stormRotationAmount : ParticleRainConfig.SnowOptions.rotationAmount) * this.rotationAmount;
+        this.roll = this.oRoll + (level.isThundering() ? ParticleRainClient.config.snow.stormRotationAmount : ParticleRainClient.config.snow.rotationAmount) * this.rotationAmount;
         if (this.onGround || this.removeIfObstructed()) {
             this.remove();
         }

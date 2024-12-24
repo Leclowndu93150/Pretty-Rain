@@ -1,6 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
-import com.leclowndu93150.particlerain.ParticleRainConfig;
+import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,9 +16,9 @@ public class DustParticle extends DustMoteParticle {
 
     protected DustParticle(ClientLevel clientWorld, double x, double y, double z, SpriteSet provider) {
         super(clientWorld, x, y, z, provider);
-        this.quadSize = ParticleRainConfig.SandOptions.size;
-        this.gravity = ParticleRainConfig.SandOptions.gravity - 0.1F;
-        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F;
+        this.quadSize = ParticleRainClient.config.sand.size;
+        this.gravity = ParticleRainClient.config.sand.gravity - 0.1F;
+        if (ParticleRainClient.config.sand.spawnOnGround) this.yd = 0.1F;
     }
     @Override
     public void tick() {

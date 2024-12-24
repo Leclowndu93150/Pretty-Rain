@@ -1,7 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
-import com.leclowndu93150.particlerain.ParticleRainConfig;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -23,7 +22,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.AxisAngle4d;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
 public class StreakParticle extends WeatherParticle {
 
     Direction direction;
@@ -31,7 +29,7 @@ public class StreakParticle extends WeatherParticle {
     private StreakParticle(ClientLevel level, double x, double y, double z, int direction2D, SpriteSet provider) {
         super(level, x, y, z);
 
-        if (ParticleRainConfig.biomeTint) {
+        if (ParticleRainClient.config.biomeTint) {
             ParticleRainClient.applyWaterTint(this, level, this.pos);
         } else {
             this.setColor(0.2f, 0.3f, 1.0f);

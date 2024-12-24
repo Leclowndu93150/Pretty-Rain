@@ -1,6 +1,6 @@
 package com.leclowndu93150.particlerain.mixin;
 
-import com.leclowndu93150.particlerain.ParticleRainConfig;
+import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.WeatherParticleSpawner;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -36,8 +36,7 @@ public class LevelRendererMixin {
 
     @Inject(method = "tickRain", at = @At("HEAD"), cancellable = true)
     public void tickRain(Camera camera, CallbackInfo ci) {
-        //TODO: play sound where particles are actually falling. presence footsteps but for rain drops might not be an awful idea?
-        if (!ParticleRainConfig.tickVanillaWeather) {
+        if (!ParticleRainClient.config.tickVanillaWeather) {
             float f = this.minecraft.level.getRainLevel(1.0F);
             if (f > 0.0F) {
                 Random random = new Random((long) this.ticks * 312987231L);
@@ -73,7 +72,7 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderSnowAndRain", at = @At("HEAD"), cancellable = true)
     public void renderWeather(LightTexture lightTexture, float partialTicks, double x, double y, double z, CallbackInfo ci) {
-        if (!ParticleRainConfig.renderVanillaWeather) {
+        if (!ParticleRainClient.config.renderVanillaWeather) {
             ci.cancel();
         }
     }

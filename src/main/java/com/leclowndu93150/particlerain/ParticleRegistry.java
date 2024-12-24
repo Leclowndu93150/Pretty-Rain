@@ -11,10 +11,10 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ParticleRegistry {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
-            DeferredRegister.create(Registries.PARTICLE_TYPE, ParticleRainClient.MODID);
+            DeferredRegister.create(Registries.PARTICLE_TYPE, ParticleRainClient.MOD_ID);
 
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
-            DeferredRegister.create(Registries.SOUND_EVENT, ParticleRainClient.MODID);
+            DeferredRegister.create(Registries.SOUND_EVENT, ParticleRainClient.MOD_ID);
 
     public static final RegistryObject<SimpleParticleType> RAIN = PARTICLE_TYPES.register("rain",
             () -> new SimpleParticleType(true));
@@ -36,13 +36,13 @@ public class ParticleRegistry {
             () -> new SimpleParticleType(true));
 
     public static final RegistryObject<SoundEvent> WEATHER_SNOW = SOUND_EVENTS.register("weather.snow",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MODID, "weather.snow")));
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MOD_ID, "weather.snow")));
     public static final RegistryObject<SoundEvent> WEATHER_SNOW_ABOVE = SOUND_EVENTS.register("weather.snow.above",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MODID, "weather.snow.above")));
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MOD_ID, "weather.snow.above")));
     public static final RegistryObject<SoundEvent> WEATHER_SANDSTORM = SOUND_EVENTS.register("weather.sandstorm",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MODID, "weather.sandstorm")));
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MOD_ID, "weather.sandstorm")));
     public static final RegistryObject<SoundEvent> WEATHER_SANDSTORM_ABOVE = SOUND_EVENTS.register("weather.sandstorm.above",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MODID, "weather.sandstorm.above")));
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ParticleRainClient.MOD_ID, "weather.sandstorm.above")));
 
     public static void register(IEventBus modEventBus) {
         PARTICLE_TYPES.register(modEventBus);

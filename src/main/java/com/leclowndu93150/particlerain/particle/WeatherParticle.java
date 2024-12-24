@@ -1,7 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
-import com.leclowndu93150.particlerain.ParticleRainConfig;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -22,7 +21,7 @@ public abstract class WeatherParticle extends TextureSheetParticle {
     protected WeatherParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
         this.setSize(0.01F, 0.01F);
-        this.lifetime = ParticleRainConfig.particleRadius * 10;
+        this.lifetime = ParticleRainClient.config.particleRadius * 10;
         this.alpha = 0.0F;
         this.pos = new BlockPos.MutableBlockPos(x, y, z);
         this.temperature = level.getBiome(this.pos).value().getBaseTemperature();
@@ -65,12 +64,12 @@ public abstract class WeatherParticle extends TextureSheetParticle {
 
     void removeIfOOB() {
         Entity cameraEntity = Minecraft.getInstance().getCameraEntity();
-        if (cameraEntity == null || cameraEntity.distanceToSqr(this.x, this.y, this.z) > Mth.square(ParticleRainConfig.particleRadius)) {
+        if (cameraEntity == null || cameraEntity.distanceToSqr(this.x, this.y, this.z) > Mth.square(ParticleRainClient.config.particleRadius)) {
             shouldFadeOut = true;
         }
 
     }
-    //FIXME: obstruction removal triggers when wind is 0...
+
     protected boolean removeIfObstructed() {
         if (x == xo || z == zo) {
             this.remove();
@@ -88,7 +87,6 @@ public abstract class WeatherParticle extends TextureSheetParticle {
         }
         else return quaternion;
     }
-
     public void renderRotatedQuad(VertexConsumer vertexConsumer, Quaternionf quaternion, float x, float y, float z, float tickPercentage) {
         quaternion.rotateY(Mth.PI);
         float quadSize = this.getQuadSize(tickPercentage);
@@ -110,7 +108,6 @@ public abstract class WeatherParticle extends TextureSheetParticle {
             vector3f.mul(quadSize);
             vector3f.add(x, y, z);
         }
-
         vertexConsumer.vertex((double)vector3fs[0].x(), (double)vector3fs[0].y(), (double)vector3fs[0].z()).uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
         vertexConsumer.vertex((double)vector3fs[1].x(), (double)vector3fs[1].y(), (double)vector3fs[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
         vertexConsumer.vertex((double)vector3fs[2].x(), (double)vector3fs[2].y(), (double)vector3fs[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();

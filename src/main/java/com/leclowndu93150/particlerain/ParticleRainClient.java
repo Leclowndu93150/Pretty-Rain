@@ -2,7 +2,10 @@ package com.leclowndu93150.particlerain;
 
 import com.leclowndu93150.particlerain.particle.*;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.ints.IntUnaryOperator;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.TextureSheetParticle;
@@ -16,42 +19,55 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.joml.Math;
-import org.slf4j.Logger;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.IntUnaryOperator;
 
-@Mod(ParticleRainClient.MODID)
-public class ParticleRainClient {
-    public static final String MODID = "particlerain";
-    public static final Logger LOGGER = LogUtils.getLogger();
+@Mod(ParticleRainClient.MOD_ID)
+public class ParticleRainClient{
 
+    public static final String MOD_ID = "particlerain";
+
+    public static ModConfig config;
     public static int particleCount;
     public static int fogCount;
 
+    public static boolean previousBiomeTintOption;
+    public static boolean previousUseResolutionOption;
+    public static int previousResolutionOption;
+
     public ParticleRainClient() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+        AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+        config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener(ParticleRainClient::saveListener);
         ParticleRegistry.register(modEventBus);
-
         modEventBus.addListener(this::registerParticleFactories);
-
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
-        MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerClientCommands);
+        MinecraftForge.EVENT_BUS.addListener(this::onPlayerJoin);
+        MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+
+    }
+
+    private void registerClientCommands(RegisterClientCommandsEvent event) {
+        event.getDispatcher().register(Commands.literal(MOD_ID)
+                .executes(ctx -> {
+                    ctx.getSource().sendSystemMessage(Component.literal(String.format("Particle count: %d/%d", particleCount, ParticleRainClient.config.maxParticleAmount)));
+                    ctx.getSource().sendSystemMessage(Component.literal(String.format("Fog density: %d/%d", fogCount, ParticleRainClient.config.groundFog.density)));
+                    return 0;
+                }));
     }
 
     private void registerParticleFactories(RegisterParticleProvidersEvent event) {
@@ -66,13 +82,34 @@ public class ParticleRainClient {
         event.registerSpriteSet(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
     }
 
-    private void registerClientCommands(RegisterClientCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal(MODID)
-                .executes(ctx -> {
-                    ctx.getSource().sendSystemMessage(Component.literal(String.format("Particle count: %d/%d", particleCount, ParticleRainConfig.maxParticleAmount)));
-                    ctx.getSource().sendSystemMessage(Component.literal(String.format("Fog density: %d/%d", fogCount, ParticleRainConfig.groundFogDensity)));
-                    return 0;
-                }));
+    private static InteractionResult saveListener(ConfigHolder<ModConfig> modConfigConfigHolder, ModConfig modConfig) {
+        if (config.biomeTint != previousBiomeTintOption || config.ripple.useResourcepackResolution != previousUseResolutionOption || config.ripple.resolution != previousResolutionOption) {
+            Minecraft.getInstance().reloadResourcePacks();
+        }
+        return InteractionResult.PASS;
+    }
+
+    public static IntUnaryOperator desaturateOperation = (int rgba) -> {
+        Color col = new Color(rgba, true);
+        int gray = Math.max(Math.max(col.getRed(), col.getGreen()), col.getBlue());
+        return ((col.getAlpha() & 0xFF) << 24) |
+                ((gray & 0xFF) << 16) |
+                ((gray & 0xFF) << 8)  |
+                ((gray & 0xFF));
+    };
+
+    public static void applyWaterTint(TextureSheetParticle particle, ClientLevel clientLevel, BlockPos blockPos) {
+        final Color waterColor = new Color(BiomeColors.getAverageWaterColor(clientLevel, blockPos));
+        final Color fogColor = new Color(clientLevel.getBiome(blockPos).value().getFogColor());
+        float rCol = (Mth.lerp(config.tintMix / 100F, waterColor.getRed(), fogColor.getRed()) / 255F);
+        float gCol = (Mth.lerp(config.tintMix / 100F, waterColor.getGreen(), fogColor.getGreen()) / 255F);
+        float bCol = (Mth.lerp(config.tintMix / 100F, waterColor.getBlue(), fogColor.getBlue()) / 255F);
+        particle.setColor(rCol, gCol, bCol);
+    }
+
+    public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        particleCount = 0;
+        fogCount = 0;
     }
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
@@ -82,35 +119,6 @@ public class ParticleRainClient {
                 WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTimeNs());
             }
         }
-    }
-
-    public static final IntUnaryOperator desaturateOperation = (int rgba) -> {
-        Color col = new Color(rgba, true);
-        int gray = Math.max(Math.max(col.getRed(), col.getGreen()), col.getBlue());
-        return ((col.getAlpha() & 0xFF) << 24) |
-                ((gray & 0xFF) << 16) |
-                ((gray & 0xFF) << 8) |
-                ((gray & 0xFF));
-    };
-
-    public static void applyWaterTint(TextureSheetParticle particle, ClientLevel clientLevel, BlockPos blockPos) {
-        final int waterColor = BiomeColors.getAverageWaterColor(clientLevel, blockPos);
-        final int fogColor = clientLevel.getBiome(blockPos).value().getFogColor();
-
-        float waterR = (waterColor >> 16 & 255) / 255.0F;
-        float waterG = (waterColor >> 8 & 255) / 255.0F;
-        float waterB = (waterColor & 255) / 255.0F;
-
-        float fogR = (fogColor >> 16 & 255) / 255.0F;
-        float fogG = (fogColor >> 8 & 255) / 255.0F;
-        float fogB = (fogColor & 255) / 255.0F;
-
-        float mix = ParticleRainConfig.tintMix / 100F;
-        particle.setColor(
-                Mth.lerp(mix, waterR, fogR),
-                Mth.lerp(mix, waterG, fogG),
-                Mth.lerp(mix, waterB, fogB)
-        );
     }
 
     public static NativeImage loadTexture(ResourceLocation resourceLocation) throws IOException {
@@ -135,7 +143,7 @@ public class ParticleRainClient {
         int size = image.getWidth();
         NativeImage sprite = new NativeImage(size, size, false);
         image.copyRect(sprite, 0, size * segment, 0, 0, size, size, true, true);
-        return new SpriteContents(new ResourceLocation(ParticleRainClient.MODID, id + segment), new FrameSize(size, size), sprite, AnimationMetadataSection.EMPTY);
+        return(new SpriteContents(new ResourceLocation(ParticleRainClient.MOD_ID, id + segment), new FrameSize(size, size), sprite, AnimationMetadataSection.EMPTY));
     }
 
     public static double yLevelWindAdjustment(double y) {
@@ -143,7 +151,7 @@ public class ParticleRainClient {
     }
 
     public static int getRippleResolution(List<SpriteContents> contents) {
-        if (ParticleRainConfig.useResourcepackResolution) {
+        if (config.ripple.useResourcepackResolution) {
             ResourceLocation resourceLocation = new ResourceLocation("big_smoke_0");
             for (SpriteContents spriteContents : contents) {
                 if (spriteContents.name().equals(resourceLocation)) {
@@ -153,10 +161,9 @@ public class ParticleRainClient {
                 }
             }
         }
-        int resolution = ParticleRainConfig.rippleResolution;
-        if (resolution < 4) resolution = 4;
-        if (resolution > 256) resolution = 256;
-        return resolution;
+        if (config.ripple.resolution < 4) config.ripple.resolution = 4;
+        if (config.ripple.resolution > 256) config.ripple.resolution = 256;
+        return config.ripple.resolution;
     }
 
     public static SpriteContents generateRipple(int i, int size) {
@@ -165,10 +172,10 @@ public class ParticleRainClient {
         Color color = Color.WHITE;
         int colorint = ((color.getAlpha() & 0xFF) << 24) |
                 ((color.getRed() & 0xFF) << 16) |
-                ((color.getGreen() & 0xFF) << 8) |
+                ((color.getGreen() & 0xFF) << 8)  |
                 ((color.getBlue() & 0xFF));
         generateBresenhamCircle(image, size, (int) Math.clamp(1, (size / 2F) - 1, radius), colorint);
-        return new SpriteContents(new ResourceLocation(MODID, "ripple" + i), new FrameSize(size, size), image, AnimationMetadataSection.EMPTY);
+        return(new SpriteContents(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple" + i), new FrameSize(size, size), image, AnimationMetadataSection.EMPTY));
     }
 
     public static void generateBresenhamCircle(NativeImage image, int imgSize, int radius, int colorint) {
@@ -177,25 +184,26 @@ public class ParticleRainClient {
         int x = 0, y = radius;
         int d = 3 - 2 * radius;
         drawCirclePixel(centerX, centerY, x, y, image, colorint);
-        while (y >= x) {
+        while (y >= x){
             if (d > 0) {
                 y--;
                 d = d + 4 * (x - y) + 10;
-            } else
+            }
+            else
                 d = d + 4 * x + 6;
             x++;
             drawCirclePixel(centerX, centerY, x, y, image, colorint);
         }
     }
 
-    private static void drawCirclePixel(int xc, int yc, int x, int y, NativeImage img, int col) {
-        img.setPixelRGBA(xc + x, yc + y, col);
-        img.setPixelRGBA(xc - x, yc + y, col);
-        img.setPixelRGBA(xc + x, yc - y, col);
-        img.setPixelRGBA(xc - x, yc - y, col);
-        img.setPixelRGBA(xc + y, yc + x, col);
-        img.setPixelRGBA(xc - y, yc + x, col);
-        img.setPixelRGBA(xc + y, yc - x, col);
-        img.setPixelRGBA(xc - y, yc - x, col);
+    static void drawCirclePixel(int xc, int yc, int x, int y, NativeImage img, int col){
+        img.setPixelRGBA(xc+x, yc+y, col);
+        img.setPixelRGBA(xc-x, yc+y, col);
+        img.setPixelRGBA(xc+x, yc-y, col);
+        img.setPixelRGBA(xc-x, yc-y, col);
+        img.setPixelRGBA(xc+y, yc+x, col);
+        img.setPixelRGBA(xc-y, yc+x, col);
+        img.setPixelRGBA(xc+y, yc-x, col);
+        img.setPixelRGBA(xc-y, yc-x, col);
     }
 }

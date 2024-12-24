@@ -1,7 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
-import com.leclowndu93150.particlerain.ParticleRainConfig;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,7 +15,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.AxisAngle4d;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -29,7 +27,7 @@ public class GroundFogParticle extends WeatherParticle {
         super(level, x, y, z);
         ParticleRainClient.fogCount++;
         this.setSprite(provider.get(level.getRandom()));
-        this.quadSize = ParticleRainConfig.GroundFogOptions.size;
+        this.quadSize = ParticleRainClient.config.groundFog.size;
         this.lifetime = 30000;
 
         Color color = new Color(this.level.getBiome(this.pos).value().getFogColor());

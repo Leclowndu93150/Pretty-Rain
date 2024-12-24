@@ -1,6 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
-import com.leclowndu93150.particlerain.ParticleRainConfig;
+import com.leclowndu93150.particlerain.ParticleRainClient;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -19,15 +19,15 @@ public class DustMoteParticle extends WeatherParticle {
     protected DustMoteParticle(ClientLevel level, double x, double y, double z, SpriteSet provider) {
         super(level, x, y, z);
         this.setSprite(provider.get(level.getRandom()));
-        this.quadSize = ParticleRainConfig.SandOptions.moteSize;
-        this.xd = ParticleRainConfig.SandOptions.windStrength;
-        this.zd = ParticleRainConfig.SandOptions.windStrength;
-        this.gravity = ParticleRainConfig.SandOptions.gravity;
+        this.quadSize = ParticleRainClient.config.sand.moteSize;
+        this.xd = ParticleRainClient.config.sand.windStrength;
+        this.zd = ParticleRainClient.config.sand.windStrength;
+        this.gravity = ParticleRainClient.config.sand.gravity;
 
         final Color color = new Color(level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, y, z)).below()).getBlock().defaultMapColor().calculateRGBColor(MapColor.Brightness.NORMAL));
-        //Mojang stop cooking up broken colors
-        this.rCol = (float)color.getBlue() / 255;
+        // Red and blue seem to be swapped
         this.bCol = (float)color.getRed() / 255;
+        this.rCol = (float)color.getBlue() / 255;
         this.gCol = (float)color.getGreen() / 255;
     }
 

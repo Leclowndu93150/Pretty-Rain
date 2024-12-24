@@ -1,6 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
-import com.leclowndu93150.particlerain.ParticleRainConfig;
+import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -28,9 +28,9 @@ public class FogParticle extends WeatherParticle {
     private FogParticle(ClientLevel level, double x, double y, double z, SpriteSet provider) {
         super(level, x, y, z);
         this.setSprite(provider.get(level.getRandom()));
-        this.lifetime = ParticleRainConfig.particleRadius * 5;
+        this.lifetime = ParticleRainClient.config.particleRadius * 5;
         final double distance = Minecraft.getInstance().cameraEntity.position().distanceTo(new Vec3(x, y, z));
-        this.quadSize = (float) (ParticleRainConfig.FogOptions.size / distance);
+        this.quadSize = (float) (ParticleRainClient.config.fog.size / distance);
 
         Color color = new Color(this.level.getBiome(this.pos).value().getFogColor()).darker();
         this.rCol = color.getRed() / 255F;
@@ -42,7 +42,7 @@ public class FogParticle extends WeatherParticle {
 
         this.xd = gravity / 3;
         this.zd = gravity / 3;
-        this.gravity = ParticleRainConfig.FogOptions.gravity;
+        this.gravity = ParticleRainClient.config.fog.gravity;
     }
 
     public void tick() {
