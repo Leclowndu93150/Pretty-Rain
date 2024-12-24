@@ -1,5 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
+import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRainConfig;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -20,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.AxisAngle4f;
@@ -40,7 +40,7 @@ public class ShrubParticle extends WeatherParticle {
         this.gravity = ParticleRainConfig.ShrubOptions.gravity;
         this.xd = ParticleRainConfig.SandOptions.windStrength;
         this.zd = ParticleRainConfig.SandOptions.windStrength;
-        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F; //otherwise they get stuck and despawn for some reason >:?
+        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F;
 
         ItemStack itemStack = new ItemStack(Items.DEAD_BUSH);
 
@@ -49,22 +49,27 @@ public class ShrubParticle extends WeatherParticle {
             if (!blockState.is(BlockTags.CROPS)) {
                 itemStack = blockState.getBlock().asItem().getDefaultInstance();
                 final TextureAtlasSprite particleIcon = Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, null, 0).getParticleIcon();
+
                 try {
-                    //bakedQuad.hasTint is always true and i cant find anything else so i guess were gonna do some bullshit >:[
-                    ResourceLocation resourceLocation = ResourceLocation.tryParse(particleIcon.contents().name().getNamespace() + ":models/" + particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
-                    Resource resource = Minecraft.getInstance().getResourceManager().getResourceOrThrow(resourceLocation);
-                    String string;
-                    try (InputStream inputStream = resource.open()) {
-                        string = new String(inputStream.readAllBytes());
+                    ResourceLocation resourceLocation = ResourceLocation.tryParse(particleIcon.contents().name().getNamespace() + ":models/" +
+                            particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
+
+                    if (resourceLocation != null) {
+                        Resource resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation).orElse(null);
+                        if (resource != null) {
+                            try (InputStream inputStream = resource.open()) {
+                                String string = new String(inputStream.readAllBytes());
+                                if (string.contains("tint")) {
+                                    final int colorInt = BiomeColors.getAverageFoliageColor(level, this.pos);
+                                    Color color = new Color(colorInt);
+                                    this.setColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
+                                }
+                            }
+                        }
                     }
-                    // works for most items
-                    if (string.contains("tint")) {
-                        final int colorInt = BiomeColors.getAverageFoliageColor(level, this.pos);
-                        Color color = new Color(colorInt);
-                        this.setColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (IOException | IllegalStateException e) {
+                    ParticleRainClient.LOGGER.debug("Failed to load shrub texture: " + e.getMessage());
+                    this.setColor(0.6F, 0.6F, 0.6F); // Default grey-ish color
                 }
             }
         } else {
@@ -127,7 +132,6 @@ public class ShrubParticle extends WeatherParticle {
 
     @OnlyIn(Dist.CLIENT)
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
-
         public DefaultFactory(SpriteSet provider) {
         }
 
