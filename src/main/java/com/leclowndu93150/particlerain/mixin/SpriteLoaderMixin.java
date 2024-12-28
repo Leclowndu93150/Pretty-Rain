@@ -1,5 +1,6 @@
 package com.leclowndu93150.particlerain.mixin;
 
+import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.CrashReport;
@@ -56,31 +57,31 @@ public abstract class SpriteLoaderMixin {
             NativeImage rainImage = null;
             NativeImage snowImage = null;
             try {
-                rainImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft","textures/environment/rain.png"));
-                snowImage = ParticleRainClient.loadTexture(new ResourceLocation("minecraft","textures/environment/snow.png"));
-                if (ParticleRainClient.config.biomeTint) rainImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
+                rainImage = ClientStuff.loadTexture(new ResourceLocation("minecraft","textures/environment/rain.png"));
+                snowImage = ClientStuff.loadTexture(new ResourceLocation("minecraft","textures/environment/snow.png"));
+                if (ParticleRainClient.config.biomeTint) rainImage.applyToAllPixels(ClientStuff.desaturateOperation);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             for (int j = 0; j < 4; j++) {
-                stitcher.registerSprite(ParticleRainClient.splitImage(rainImage, j, "rain"));
+                stitcher.registerSprite(ClientStuff.splitImage(rainImage, j, "rain"));
             }
             for (int j = 0; j < 4; j++) {
-                stitcher.registerSprite(ParticleRainClient.splitImage(snowImage, j, "snow"));
+                stitcher.registerSprite(ClientStuff.splitImage(snowImage, j, "snow"));
             }
 
-            int rippleResolution = ParticleRainClient.getRippleResolution(this.spriteContentsList);
+            int rippleResolution = ClientStuff.getRippleResolution(this.spriteContentsList);
             for (int j = 0; j < 8; j++) {
-                stitcher.registerSprite(ParticleRainClient.generateRipple(j, rippleResolution));
+                stitcher.registerSprite(ClientStuff.generateRipple(j, rippleResolution));
             }
 
             if (ParticleRainClient.config.biomeTint) {
                 for (int j = 0; j < 4; j++) {
                     NativeImage splashImage = null;
                     try {
-                        splashImage = ParticleRainClient.loadTexture(new ResourceLocation("textures/particle/splash_" + j + ".png"));
-                        splashImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
+                        splashImage = ClientStuff.loadTexture(new ResourceLocation("textures/particle/splash_" + j + ".png"));
+                        splashImage.applyToAllPixels(ClientStuff.desaturateOperation);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

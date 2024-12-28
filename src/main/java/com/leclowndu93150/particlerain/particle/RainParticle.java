@@ -1,5 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
+import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRegistry;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -35,7 +36,7 @@ public class RainParticle extends WeatherParticle {
     protected RainParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
 
-        if (ParticleRainClient.config.biomeTint) ParticleRainClient.applyWaterTint(this, level, this.pos);
+        if (ParticleRainClient.config.biomeTint) ClientStuff.applyWaterTint(this, level, this.pos);
 
         this.quadSize = ParticleRainClient.config.rain.size;
         this.gravity = ParticleRainClient.config.rain.gravity;
@@ -48,7 +49,7 @@ public class RainParticle extends WeatherParticle {
             this.xd = gravity * ParticleRainClient.config.rain.windStrength;
         }
         if (ParticleRainClient.config.yLevelWindAdjustment) {
-            this.xd = this.xd * ParticleRainClient.yLevelWindAdjustment(y);
+            this.xd = this.xd * ClientStuff.yLevelWindAdjustment(y);
         }
         this.zd = this.xd;
 

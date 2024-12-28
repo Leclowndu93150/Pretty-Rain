@@ -1,5 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
+import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -30,7 +31,7 @@ public class StreakParticle extends WeatherParticle {
         super(level, x, y, z);
 
         if (ParticleRainClient.config.biomeTint) {
-            ParticleRainClient.applyWaterTint(this, level, this.pos);
+            ClientStuff.applyWaterTint(this, level, this.pos);
         } else {
             this.setColor(0.2f, 0.3f, 1.0f);
         }

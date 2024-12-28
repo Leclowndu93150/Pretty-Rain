@@ -1,5 +1,6 @@
 package com.leclowndu93150.particlerain.particle;
 
+import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -30,7 +31,7 @@ public class SnowParticle extends WeatherParticle {
             this.xd = gravity * ParticleRainClient.config.snow.windStrength;
         }
         if (ParticleRainClient.config.yLevelWindAdjustment) {
-            this.xd = this.xd * ParticleRainClient.yLevelWindAdjustment(y);
+            this.xd = this.xd * ClientStuff.yLevelWindAdjustment(y);
         }
         this.zd = this.xd;
 

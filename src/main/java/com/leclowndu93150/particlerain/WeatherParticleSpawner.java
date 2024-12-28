@@ -15,14 +15,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nullable;
 
+@OnlyIn(Dist.CLIENT)
 public final class WeatherParticleSpawner {
 
     private static final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
     private static void spawnParticle(ClientLevel level, Holder<Biome> biome, double x, double y, double z) {
+        if (!FMLEnvironment.dist.isClient()) return;
+
         if (ParticleRainClient.particleCount > ParticleRainClient.config.maxParticleAmount) {
             return;
         } else if (!ParticleRainClient.config.spawnAboveClouds && y > ParticleRainClient.config.cloudHeight) {
@@ -63,6 +69,8 @@ public final class WeatherParticleSpawner {
     }
 
     public static void update(ClientLevel level, Entity entity, float partialTicks) {
+        if (!FMLEnvironment.dist.isClient()) return;
+
         if (level.isRaining() || ParticleRainClient.config.alwaysRaining) {
             int density;
             if (level.isThundering())

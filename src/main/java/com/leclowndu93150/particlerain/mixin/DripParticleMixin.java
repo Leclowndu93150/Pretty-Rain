@@ -1,5 +1,7 @@
 package com.leclowndu93150.particlerain.mixin;
 
+import ca.weblite.objc.Client;
+import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.DripParticle;
@@ -16,11 +18,11 @@ public abstract class DripParticleMixin {
 
     @Inject(method = "createWaterHangParticle", at = @At("TAIL"))
     private static void createWaterHangParticle(SimpleParticleType simpleParticleType, ClientLevel clientLevel, double d, double e, double f, double g, double h, double i, CallbackInfoReturnable<TextureSheetParticle> cir) {
-        if (ParticleRainClient.config.biomeTint) ParticleRainClient.applyWaterTint(cir.getReturnValue(), clientLevel, BlockPos.containing(d, e, f));
+        if (ParticleRainClient.config.biomeTint) ClientStuff.applyWaterTint(cir.getReturnValue(), clientLevel, BlockPos.containing(d, e, f));
     }
 
     @Inject(method = "createWaterFallParticle", at = @At("TAIL"))
     private static void createWaterFallParticle(SimpleParticleType simpleParticleType, ClientLevel clientLevel, double d, double e, double f, double g, double h, double i, CallbackInfoReturnable<TextureSheetParticle> cir) {
-        if (ParticleRainClient.config.biomeTint) ParticleRainClient.applyWaterTint(cir.getReturnValue(), clientLevel, BlockPos.containing(d, e, f));
+        if (ParticleRainClient.config.biomeTint) ClientStuff.applyWaterTint(cir.getReturnValue(), clientLevel, BlockPos.containing(d, e, f));
     }
 }
