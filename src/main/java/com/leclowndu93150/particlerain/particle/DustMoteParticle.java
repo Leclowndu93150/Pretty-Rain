@@ -9,7 +9,6 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.material.MapColor;
 
 import java.awt.Color;
 
@@ -24,7 +23,7 @@ public class DustMoteParticle extends WeatherParticle {
         this.zd = ParticleRainClient.config.sand.windStrength;
         this.gravity = ParticleRainClient.config.sand.gravity;
 
-        final Color color = new Color(level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, y, z)).below()).getBlock().defaultMapColor().calculateRGBColor(MapColor.Brightness.NORMAL));
+        final Color color = new Color(level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, y, z)).below()).getMaterial().getColor().col);
         // Red and blue seem to be swapped
         this.bCol = (float)color.getRed() / 255;
         this.rCol = (float)color.getBlue() / 255;

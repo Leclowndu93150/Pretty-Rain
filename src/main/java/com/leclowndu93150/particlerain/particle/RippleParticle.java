@@ -2,6 +2,8 @@ package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -15,10 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.AxisAngle4d;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Math;
 
 public class RippleParticle extends WeatherParticle {
 
@@ -51,8 +49,13 @@ public class RippleParticle extends WeatherParticle {
         float y = (float) (Mth.lerp(f, this.yo, this.y) - camPos.y());
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
 
-        Quaternionf quaternion = new Quaternionf(new AxisAngle4d(Mth.HALF_PI, -1, 0, 0));
-        this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
+        Quaternion quaternion = new Quaternion(-1, 0, 0, Mth.HALF_PI);
+        Vector3f normalizedPos = new Vector3f(x, y, z);
+        if(normalizedPos.normalize()) {
+            if(normalizedPos.dot(Vector3f.ZP) < 0) {
+                quaternion.mul(new Quaternion(0, 1, 0, Mth.PI));
+            }
+        }
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, f);
     }
 

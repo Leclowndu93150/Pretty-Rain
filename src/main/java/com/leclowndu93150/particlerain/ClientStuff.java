@@ -9,29 +9,26 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
-import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Math;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import static com.leclowndu93150.particlerain.ParticleRainClient.fogCount;
 import static com.leclowndu93150.particlerain.ParticleRainClient.particleCount;
@@ -79,7 +76,7 @@ public class ClientStuff {
         }
 
         @SubscribeEvent
-        public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        public void onPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
             particleCount = 0;
             fogCount = 0;
         }
@@ -110,42 +107,57 @@ public class ClientStuff {
         particle.setColor(rCol, gCol, bCol);
     }
 
-    public static NativeImage loadTexture(ResourceLocation resourceLocation) throws IOException {
-        Resource resource = Minecraft.getInstance().getResourceManager().getResourceOrThrow(resourceLocation);
-        InputStream inputStream = resource.open();
-        NativeImage nativeImage;
-        try {
-            nativeImage = NativeImage.read(inputStream);
-        } catch (Throwable owo) {
-            try {
-                inputStream.close();
-            } catch (Throwable uwu) {
-                owo.addSuppressed(uwu);
-            }
-            throw owo;
-        }
-        inputStream.close();
-        return nativeImage;
+    public static NativeImage loadTexture(ResourceManager manager, ResourceLocation location) throws IOException {
+        Resource resource = manager.getResource(location);
+        return NativeImage.read(resource.getInputStream());
     }
 
-    public static SpriteContents splitImage(NativeImage image, int segment, String id) {
-        int size = image.getWidth();
-        NativeImage sprite = new NativeImage(size, size, false);
-        image.copyRect(sprite, 0, size * segment, 0, 0, size, size, true, true);
-        return(new SpriteContents(new ResourceLocation(ParticleRainClient.MOD_ID, id + segment), new FrameSize(size, size), sprite, AnimationMetadataSection.EMPTY));
+    public static TextureAtlasSprite.Info createInfo(ResourceLocation location, NativeImage image) {
+        return new TextureAtlasSprite.Info(location, image.getWidth(), image.getHeight(), AnimationMetadataSection.EMPTY);
+    }
+
+    public static TextureAtlasSprite.Info splitImage(NativeImage source, int index, String name) {
+        int frameWidth = source.getWidth() / 4;
+        int frameHeight = source.getHeight();
+        NativeImage frame = new NativeImage(frameWidth, frameHeight, false);
+
+        for(int x = 0; x < frameWidth; x++) {
+            for(int y = 0; y < frameHeight; y++) {
+                frame.setPixelRGBA(x, y, source.getPixelRGBA(x + index * frameWidth, y));
+            }
+        }
+
+        return createInfo(new ResourceLocation(ParticleRainClient.MOD_ID, name + index), frame);
+    }
+
+    public static void desaturateImage(NativeImage image) {
+        for(int x = 0; x < image.getWidth(); x++) {
+            for(int y = 0; y < image.getHeight(); y++) {
+                int pixel = image.getPixelRGBA(x, y);
+                int r = NativeImage.getR(pixel);
+                int g = NativeImage.getG(pixel);
+                int b = NativeImage.getB(pixel);
+                int a = NativeImage.getA(pixel);
+
+                // Grayscale conversion using luminance formula
+                int gray = (int)(r * 0.299 + g * 0.587 + b * 0.114);
+
+                image.setPixelRGBA(x, y, NativeImage.combine(a, gray, gray, gray));
+            }
+        }
     }
 
     public static double yLevelWindAdjustment(double y) {
-        return Math.clamp(0.01, 1, (y - 64) / 40);
+        return Mth.clamp(0.01, 1, (y - 64) / 40);
     }
 
-    public static int getRippleResolution(List<SpriteContents> contents) {
+    public static int getRippleResolution(List<TextureAtlasSprite> sprites) {
         if (config.ripple.useResourcepackResolution) {
             ResourceLocation resourceLocation = new ResourceLocation("big_smoke_0");
-            for (SpriteContents spriteContents : contents) {
-                if (spriteContents.name().equals(resourceLocation)) {
-                    if (spriteContents.width() < 256) {
-                        return spriteContents.width();
+            for (TextureAtlasSprite sprite : sprites) {
+                if (sprite.getName().equals(resourceLocation)) {
+                    if (sprite.getWidth() < 256) {
+                        return sprite.getWidth();
                     }
                 }
             }
@@ -155,7 +167,7 @@ public class ClientStuff {
         return config.ripple.resolution;
     }
 
-    public static SpriteContents generateRipple(int i, int size) {
+    public static TextureAtlasSprite.Info generateRipple(int i, int size) {
         float radius = ((size / 2F) / 8) * (i + 1);
         NativeImage image = new NativeImage(size, size, true);
         Color color = Color.WHITE;
@@ -163,8 +175,8 @@ public class ClientStuff {
                 ((color.getRed() & 0xFF) << 16) |
                 ((color.getGreen() & 0xFF) << 8)  |
                 ((color.getBlue() & 0xFF));
-        generateBresenhamCircle(image, size, (int) Math.clamp(1, (size / 2F) - 1, radius), colorint);
-        return(new SpriteContents(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple" + i), new FrameSize(size, size), image, AnimationMetadataSection.EMPTY));
+        generateBresenhamCircle(image, size, (int) Mth.clamp(1, (size / 2F) - 1, radius), colorint);
+        return new TextureAtlasSprite.Info(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple" + i), size, size, AnimationMetadataSection.EMPTY);
     }
 
     public static void generateBresenhamCircle(NativeImage image, int imgSize, int radius, int colorint) {

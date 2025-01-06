@@ -2,6 +2,8 @@ package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -10,8 +12,6 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 public class DustParticle extends DustMoteParticle {
 
@@ -35,7 +35,7 @@ public class DustParticle extends DustMoteParticle {
         float y = (float)(Mth.lerp((double)tickPercentage, this.yo, this.y) - camPos.y());
         float z = (float)(Mth.lerp((double)tickPercentage, this.zo, this.z) - camPos.z());
 
-        Quaternionf quaternion = camera.rotation();
+        Quaternion quaternion = camera.rotation();
         y = y + Mth.sin((Mth.lerp(tickPercentage, this.age - 1.0F, this.age)) / 20) + 1.5F;
 
         float quadSize = this.getQuadSize(tickPercentage);
@@ -53,7 +53,7 @@ public class DustParticle extends DustMoteParticle {
 
         for(int k = 0; k < 4; ++k) {
             Vector3f vector3f = vector3fs[k];
-            vector3f.rotate(quaternion);
+            vector3f.transform(quaternion);
             vector3f.mul(quadSize);
             vector3f.add(x, y, z);
         }

@@ -2,7 +2,8 @@ package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -18,8 +19,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -69,17 +68,15 @@ public class FogParticle extends WeatherParticle {
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
         Vector3f localPos = new Vector3f(x, y, z);
 
-        // rotate particle around y axis to face player
-        Quaternionf quaternion = Axis.YP.rotation((float) Math.atan2(x, z) + Mth.PI);
-        // rotate particle by angle between y axis and camera location
-        float yAngle = (float) Math.asin(y / localPos.length());
-        quaternion.rotateX(yAngle);
-        quaternion.rotateZ((float) Math.atan2(x, z));
-        // the z rotation doubles up on the -y axis instead of negating it like the positive axis. idk how to fix
-        // for now we remove them before it gets to look too weird
-        if (yAngle < -1) shouldFadeOut = true;
+        float yRot = (float) Math.atan2(x, z) + Mth.PI;
+        float xRot = (float) Math.asin(y / Math.sqrt(x * x + y * y + z * z));
+        Quaternion quaternion = Vector3f.YP.rotation(yRot);
+        quaternion.mul(new Quaternion(xRot, 0, 0, true));
+        quaternion.mul(new Quaternion(0, 0, (float) Math.atan2(x, z), true));
 
-        quaternion.rotateZ(Mth.lerp(f, this.oRoll, this.roll));
+        if (xRot < -1) shouldFadeOut = true;
+
+        quaternion.mul(new Quaternion(0, 0, Mth.lerp(f, this.oRoll, this.roll), true));
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, f);
     }
 

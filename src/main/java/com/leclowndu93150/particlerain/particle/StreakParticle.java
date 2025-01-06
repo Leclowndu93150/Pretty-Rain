@@ -3,6 +3,8 @@ package com.leclowndu93150.particlerain.particle;
 import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -20,9 +22,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.AxisAngle4d;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+
 public class StreakParticle extends WeatherParticle {
 
     Direction direction;
@@ -71,8 +71,13 @@ public class StreakParticle extends WeatherParticle {
         float y = (float) (Mth.lerp(f, this.yo, this.y) - camPos.y());
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
 
-        Quaternionf quaternion = new Quaternionf(new AxisAngle4d(this.roll, 0, 1, 0));
-        this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
+        Quaternion quaternion = new Quaternion(0, 1, 0, this.roll);
+        Vector3f normalizedPos = new Vector3f(x, y, z);
+        if(normalizedPos.normalize()) {
+            if(normalizedPos.dot(Vector3f.ZP) < 0) {
+                quaternion.mul(new Quaternion(0, 1, 0, Mth.PI));
+            }
+        }
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y + 0.25F, z, f);
     }
 

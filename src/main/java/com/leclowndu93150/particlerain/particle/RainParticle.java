@@ -4,7 +4,8 @@ import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRegistry;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -27,8 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.*;
-import org.joml.Math;
 
 
 public class RainParticle extends WeatherParticle {
@@ -61,15 +60,15 @@ public class RainParticle extends WeatherParticle {
     @Override
     public void tick() {
         super.tick();
-        if (this.age < 10) this.alpha = Math.clamp(0, ParticleRainClient.config.rain.opacity / 100F, this.alpha);
+        if (this.age < 10) this.alpha = Mth.clamp(0, ParticleRainClient.config.rain.opacity / 100F, this.alpha);
         if (this.onGround || !this.level.getFluidState(this.pos).isEmpty()) {
             // TODO: rewrite this whole bit
-            if ((ParticleRainClient.config.doSplashParticles || ParticleRainClient.config.doSmokeParticles || ParticleRainClient.config.doRippleParticles) && Minecraft.getInstance().cameraEntity.position().distanceTo(this.pos.getCenter()) < ParticleRainClient.config.particleRadius - (ParticleRainClient.config.particleRadius / 2.0)) {
+            if ((ParticleRainClient.config.doSplashParticles || ParticleRainClient.config.doSmokeParticles || ParticleRainClient.config.doRippleParticles) && Minecraft.getInstance().cameraEntity.position().distanceTo(Vec3.atCenterOf(this.pos)) < ParticleRainClient.config.particleRadius - (ParticleRainClient.config.particleRadius / 2.0)) {
                 for (int i = 0; i < ParticleRainClient.config.rain.splashDensity; i++) {
-                    Vec3 spawnPos = Vec3.atLowerCornerWithOffset(this.pos, (random.nextFloat() * 3) - 1, 0, (random.nextFloat() * 3) - 1);
+                    Vec3 spawnPos = Vec3.atBottomCenterOf(this.pos).add((random.nextFloat() * 3) - 1, 0, (random.nextFloat() * 3) - 1);
                     double d = random.nextDouble();
                     double e = random.nextDouble();
-                    BlockPos blockPos = BlockPos.containing(spawnPos);
+                    BlockPos blockPos = new BlockPos(spawnPos);
                     BlockState blockState = level.getBlockState(blockPos);
                     FluidState fluidState = level.getFluidState(blockPos);
                     VoxelShape voxelShape = blockState.getCollisionShape(level, blockPos);
@@ -102,7 +101,7 @@ public class RainParticle extends WeatherParticle {
             Vec3 raycastEnd = new Vec3(this.x + ParticleRainClient.config.rain.windStrength, this.y, this.z + ParticleRainClient.config.rain.windStrength);
             BlockHitResult hit = level.clip(new ClipContext(raycastStart, raycastEnd, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, Minecraft.getInstance().player));
             if (hit.getType().equals(HitResult.Type.BLOCK)) {
-                if (ParticleRainClient.config.doStreakParticles && Minecraft.getInstance().cameraEntity.position().distanceTo(this.pos.getCenter()) < ParticleRainClient.config.particleRadius - (ParticleRainClient.config.particleRadius / 2.0)) {
+                if (ParticleRainClient.config.doStreakParticles && Minecraft.getInstance().cameraEntity.position().distanceTo(Vec3.atCenterOf(this.pos)) < ParticleRainClient.config.particleRadius - (ParticleRainClient.config.particleRadius / 2.0)) {
                     BlockState state = level.getBlockState(hit.getBlockPos());
                     if (state.is(BlockTags.IMPERMEABLE) || state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
                         Minecraft.getInstance().particleEngine.createParticle(ParticleRegistry.STREAK.get(), this.x, this.y, this.z, hit.getDirection().get2DDataValue(), 0, 0);
@@ -116,22 +115,21 @@ public class RainParticle extends WeatherParticle {
 
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickPercentage) {
-        Vector3f camPos = camera.getPosition().toVector3f();
-        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x);
-        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y);
-        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z);
+        Vec3 camPos = camera.getPosition();
+        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x());
+        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y());
+        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z());
 
-        // angle particle along axis of velocity
+        // Angle particle along velocity axis
         Vector3f delta = new Vector3f((float) this.xd, (float) this.yd, (float) this.zd);
-        final float angle = Math.acos(delta.normalize().y);
-        Vector3f axis = new Vector3f(-delta.z(), 0, delta.x()).normalize();
-        Quaternionf quaternion = new Quaternionf(new AxisAngle4f(-angle, axis));
+        delta.normalize();
+        float angle = (float) Math.acos(delta.y());
+        Vector3f axis = new Vector3f(-delta.z(), 0, delta.x());
+        axis.normalize();
+        Quaternion quaternion = new Quaternion(axis.x(), axis.y(), axis.z(), -angle);
 
-        // rotate particle to face camera
-        //quaternion.mul(Axis.YN.rotation(Math.atan2(x, z) + Mth.HALF_PI));
-        // idk how to translate this to work with the angled axis, using as-is results in weird rotation
-        // for now the rotation is calculated once when the particle spawns, which looks good enough
-        quaternion.mul(Axis.YN.rotation(this.roll));
+        // Rotate to face camera
+        quaternion.mul(Vector3f.YN.rotation(this.roll));
         quaternion = this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, tickPercentage);
     }
