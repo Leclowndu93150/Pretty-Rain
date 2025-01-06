@@ -7,11 +7,9 @@
   "mixins": [
   ],
   "client": [
-    "DripParticleMixin",
     "DripParticleWaterFallProviderMixin",
     "DripParticleWaterHangProviderMixin",
     "LevelRendererMixin",
-    "SpriteLoaderMixin",
     "TextureAtlasMixin",
     "TextureSheetParticleMixin",
     "WaterDropParticleMixin"

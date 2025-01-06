@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -21,6 +21,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,7 +29,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
 
 import static com.leclowndu93150.particlerain.ParticleRainClient.fogCount;
 import static com.leclowndu93150.particlerain.ParticleRainClient.particleCount;
@@ -41,16 +42,16 @@ public class ClientStuff {
     public static boolean previousUseResolutionOption;
     public static int previousResolutionOption;
 
-    static void registerParticles(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleRegistry.RAIN.get(), RainParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.SNOW.get(), SnowParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.DUST_MOTE.get(), DustMoteParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.DUST.get(), DustParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.SHRUB.get(), ShrubParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.FOG.get(), FogParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.GROUND_FOG.get(), GroundFogParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.RIPPLE.get(), RippleParticle.DefaultFactory::new);
-        event.registerSpriteSet(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
+    static void registerParticles(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.RAIN.get(), RainParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.SNOW.get(), SnowParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.DUST_MOTE.get(), DustMoteParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.DUST.get(), DustParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.SHRUB.get(), ShrubParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.FOG.get(), FogParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.GROUND_FOG.get(), GroundFogParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.RIPPLE.get(), RippleParticle.DefaultFactory::new);
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT)
@@ -59,8 +60,8 @@ public class ClientStuff {
         public static void registerClientCommands(RegisterClientCommandsEvent event) {
             event.getDispatcher().register(Commands.literal(MOD_ID)
                     .executes(ctx -> {
-                        ctx.getSource().sendSystemMessage(Component.literal(String.format("Particle count: %d/%d", particleCount, ParticleRainClient.config.maxParticleAmount)));
-                        ctx.getSource().sendSystemMessage(Component.literal(String.format("Fog density: %d/%d", fogCount, ParticleRainClient.config.groundFog.density)));
+                        ctx.getSource().sendSuccess(new net.minecraft.network.chat.TextComponent(String.format("Particle count: %d/%d", particleCount, ParticleRainClient.config.maxParticleAmount)), false);
+                        ctx.getSource().sendSuccess(new TextComponent(String.format("Fog density: %d/%d", fogCount, ParticleRainClient.config.groundFog.density)), false);
                         return 0;
                     }));
         }
@@ -70,7 +71,7 @@ public class ClientStuff {
             if(event.phase == TickEvent.Phase.END){
                 Minecraft minecraft = Minecraft.getInstance();
                 if (!minecraft.isPaused() && minecraft.level != null && minecraft.getCameraEntity() != null) {
-                    WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTimeNs());
+                    WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getDeltaFrameTime());
                 }
             }
         }
