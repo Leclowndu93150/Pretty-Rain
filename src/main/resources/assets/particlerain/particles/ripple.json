@@ -1,8 +1,12 @@
 {
   "textures": [
-    "particlerain:particle/ripple0"
-  ],
-  "frames": [
-    { "index": 0, "time": 1 }
+    "particlerain:particle/ripple_0",
+    "particlerain:particle/ripple_1",
+    "particlerain:particle/ripple_2",
+    "particlerain:particle/ripple_3",
+    "particlerain:particle/ripple_4",
+    "particlerain:particle/ripple_5",
+    "particlerain:particle/ripple_6",
+    "particlerain:particle/ripple_7"
   ]
 }

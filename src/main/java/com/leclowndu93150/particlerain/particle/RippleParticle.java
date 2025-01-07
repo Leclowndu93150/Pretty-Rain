@@ -22,7 +22,7 @@ public class RippleParticle extends WeatherParticle {
 
     private RippleParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple0")));
+        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple_0")));
         this.quadSize = 0.25F;
         this.alpha = 0.1F;
         this.x = Math.round(this.x / (1F / 16F)) * (1F / 16F);
@@ -34,7 +34,7 @@ public class RippleParticle extends WeatherParticle {
         super.tick();
         this.alpha = Mth.lerp(this.age / 9F, 0.3F, 0F);
         if (this.age > 8) this.remove();
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple" + (this.age - 1))));
+        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple_" + (this.age - 1))));
     }
 
     @Override

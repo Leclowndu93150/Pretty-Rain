@@ -180,7 +180,7 @@ public class ClientStuff {
                 ((color.getGreen() & 0xFF) << 8)  |
                 ((color.getBlue() & 0xFF));
         generateBresenhamCircle(image, size, (int) Mth.clamp(1, (size / 2F) - 1, radius), colorint);
-        return new TextureAtlasSprite.Info(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple" + i), size, size, AnimationMetadataSection.EMPTY);
+        return new TextureAtlasSprite.Info(new ResourceLocation(ParticleRainClient.MOD_ID, "particle/ripple_" + i), size, size, AnimationMetadataSection.EMPTY);
     }
 
     public static void generateBresenhamCircle(NativeImage image, int imgSize, int radius, int colorint) {

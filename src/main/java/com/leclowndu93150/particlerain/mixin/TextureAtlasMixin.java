@@ -36,7 +36,6 @@ public abstract class TextureAtlasMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void registerWeatherParticles(ResourceManager resourceManager, Stream<ResourceLocation> spriteNames, ProfilerFiller profiler, int mipLevel, CallbackInfoReturnable<TextureAtlas.Preparations> cir, Set set, int i, Stitcher stitcher, int j, int k, Iterator var10, TextureAtlasSprite.Info textureatlassprite$info, int l) {
-
         if (!this.location.equals(new ResourceLocation("textures/atlas/particles.png"))) return;
 
         profiler.push("weather_particles");
@@ -72,13 +71,11 @@ public abstract class TextureAtlasMixin {
             }
         }
 
-        int rippleResolution = ClientStuff.getRippleResolution(getLoadedSprites(resourceManager, stitcher, mipLevel));
+        int rippleResolution = ClientStuff.getRippleResolution(List.of());
         for (int j2 = 0; j2 < 8; j2++) {
             stitcher.registerSprite(ClientStuff.generateRipple(j2, rippleResolution));
         }
 
         profiler.pop();
     }
-
-    @Shadow protected abstract List<TextureAtlasSprite> getLoadedSprites(ResourceManager manager, Stitcher stitcher, int mipmap);
 }
