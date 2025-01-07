@@ -1,12 +1,9 @@
 package com.leclowndu93150.particlerain.mixin;
 
-package com.leclowndu93150.particlerain.mixin;
-
 import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.*;
-import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -19,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -39,20 +35,7 @@ public abstract class TextureAtlasMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void registerWeatherParticles(
-            ResourceManager resourceManager,
-            Stream<ResourceLocation> spriteNames,
-            ProfilerFiller profiler,
-            int mipLevel,
-            CallbackInfoReturnable<TextureAtlas.Preparations> cir,
-            Set<ResourceLocation> set,
-            int i,
-            Stitcher stitcher,
-            int j,
-            int k,
-            Collection<TextureAtlasSprite.Info> collection,
-            Iterator<TextureAtlasSprite.Info> iterator,
-            TextureAtlasSprite.Info info) {
+    private void registerWeatherParticles(ResourceManager resourceManager, Stream<ResourceLocation> spriteNames, ProfilerFiller profiler, int mipLevel, CallbackInfoReturnable<TextureAtlas.Preparations> cir, Set set, int i, Stitcher stitcher, int j, int k, Iterator var10, TextureAtlasSprite.Info textureatlassprite$info, int l) {
 
         if (!this.location.equals(new ResourceLocation("textures/atlas/particles.png"))) return;
 
@@ -79,10 +62,10 @@ public abstract class TextureAtlasMixin {
             for (int j2 = 0; j2 < 4; j2++) {
                 try {
                     NativeImage splashImage = ClientStuff.loadTexture(resourceManager,
-                            new ResourceLocation("textures/particle/splash_" + j2 + ".png"));
+                            new ResourceLocation("minecraft","textures/particle/splash_" + j2 + ".png"));
                     ClientStuff.desaturateImage(splashImage);
                     stitcher.registerSprite(ClientStuff.createInfo(
-                            new ResourceLocation(ParticleRainClient.MOD_ID, "splash" + j2), splashImage));
+                            new ResourceLocation("minecraft", "particle/splash_" + j2), splashImage));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

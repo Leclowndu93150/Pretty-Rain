@@ -1,0 +1,8 @@
+{
+  "textures": [
+    "particlerain:particle/ripple0"
+  ],
+  "frames": [
+    { "index": 0, "time": 1 }
+  ]
+}

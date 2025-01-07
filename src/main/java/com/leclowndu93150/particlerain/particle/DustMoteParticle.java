@@ -25,8 +25,8 @@ public class DustMoteParticle extends WeatherParticle {
 
         final Color color = new Color(level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, y, z)).below()).getMaterial().getColor().col);
         // Red and blue seem to be swapped
-        this.bCol = (float)color.getRed() / 255;
-        this.rCol = (float)color.getBlue() / 255;
+        this.rCol = (float)color.getRed() / 255;
+        this.bCol = (float)color.getBlue() / 255;
         this.gCol = (float)color.getGreen() / 255;
     }
 

@@ -1,0 +1,8 @@
+{
+  "textures": [
+    "minecraft:block/dead_bush"
+  ],
+  "frames": [
+    { "index": 0, "time": 1 }
+  ]
+}
