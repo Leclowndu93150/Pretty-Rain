@@ -7,6 +7,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -43,15 +44,17 @@ public class ClientStuff {
     public static int previousResolutionOption;
 
     static void registerParticles(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.RAIN.get(), RainParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.SNOW.get(), SnowParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.DUST_MOTE.get(), DustMoteParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.DUST.get(), DustParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.SHRUB.get(), ShrubParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.FOG.get(), FogParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.GROUND_FOG.get(), GroundFogParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.RIPPLE.get(), RippleParticle.DefaultFactory::new);
-        Minecraft.getInstance().particleEngine.register(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
+        ParticleEngine engine = Minecraft.getInstance().particleEngine;
+
+        engine.register(ParticleRegistry.RAIN.get(), RainParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.SNOW.get(), SnowParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.DUST_MOTE.get(), DustMoteParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.DUST.get(), DustParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.FOG.get(), FogParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.GROUND_FOG.get(), GroundFogParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.SHRUB.get(), ShrubParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.RIPPLE.get(), RippleParticle.DefaultFactory::new);
+        engine.register(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT)

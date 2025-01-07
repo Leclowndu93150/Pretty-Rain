@@ -18,13 +18,13 @@ public class ParticleRainClient{
 
     public ParticleRainClient() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ParticleRegistry.register(modEventBus);
         if(FMLLoader.getDist() == Dist.CLIENT) {
-            modEventBus.addListener(ClientStuff::registerParticles);
             AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
             config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
             AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener(ClientStuff::saveListener);
+            modEventBus.addListener(ClientStuff::registerParticles);
         }
-        ParticleRegistry.register(modEventBus);
     }
 
 }
