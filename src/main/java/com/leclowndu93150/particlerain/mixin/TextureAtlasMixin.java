@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -35,8 +36,9 @@ public abstract class TextureAtlasMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void registerWeatherParticles(ResourceManager resourceManager, Stream<ResourceLocation> spriteNames, ProfilerFiller profiler, int mipLevel, CallbackInfoReturnable<TextureAtlas.Preparations> cir, Set set, int i, Stitcher stitcher, int j, int k, Iterator var10, TextureAtlasSprite.Info textureatlassprite$info, int l) {
-        if (!this.location.equals(new ResourceLocation("textures/atlas/particles.png"))) return;
+    private void registerWeatherParticles(ResourceManager resourceManager, Stream<ResourceLocation> spriteNames, ProfilerFiller profiler, int mipLevel,
+                                          CallbackInfoReturnable<TextureAtlas.Preparations> cir, Set<ResourceLocation> set, int i, Stitcher stitcher, int j, int k) {
+        if (!this.location.equals(TextureAtlas.LOCATION_PARTICLES)) return;
 
         profiler.push("weather_particles");
         ParticleRainClient.particleCount = 0;

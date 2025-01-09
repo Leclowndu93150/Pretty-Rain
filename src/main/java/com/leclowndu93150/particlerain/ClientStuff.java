@@ -29,6 +29,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -130,8 +131,15 @@ public class ClientStuff {
                 frame.setPixelRGBA(x, y, source.getPixelRGBA(x + index * frameWidth, y));
             }
         }
-
-        return createInfo(new ResourceLocation(ParticleRainClient.MOD_ID, name + index), frame);
+        if (!new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/" + name + index + ".png").exists()) {
+            System.out.println("Generating pretty rain texture: " + name + index + ".png");
+            try {
+                frame.writeToFile(new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/" + name + index + ".png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return createInfo(new ResourceLocation(ParticleRainClient.MOD_ID, "particle/" + name + index), frame);
     }
 
     public static void desaturateImage(NativeImage image) {
@@ -180,6 +188,15 @@ public class ClientStuff {
                 ((color.getGreen() & 0xFF) << 8)  |
                 ((color.getBlue() & 0xFF));
         generateBresenhamCircle(image, size, (int) Mth.clamp(1, (size / 2F) - 1, radius), colorint);
+
+        if (!new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/ripple_" + i + ".png").exists()) {
+            System.out.println("Generating pretty rain texture: ripple_" + i + ".png");
+            try {
+                image.writeToFile(new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/ripple_" + i + ".png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return new TextureAtlasSprite.Info(new ResourceLocation(ParticleRainClient.MOD_ID, "particle/ripple_" + i), size, size, AnimationMetadataSection.EMPTY);
     }
 
