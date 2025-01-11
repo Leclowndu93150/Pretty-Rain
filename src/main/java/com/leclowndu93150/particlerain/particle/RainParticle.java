@@ -40,7 +40,7 @@ public class RainParticle extends WeatherParticle {
         this.quadSize = ParticleRainClient.config.rain.size;
         this.gravity = ParticleRainClient.config.rain.gravity;
         this.yd = -gravity;
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "rain" + random.nextInt(4))));
+        //this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "rain" + random.nextInt(4))));
 
         if (level.isThundering()) {
             this.xd = gravity * ParticleRainClient.config.rain.stormWindStrength;
@@ -115,22 +115,21 @@ public class RainParticle extends WeatherParticle {
 
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickPercentage) {
-        Vec3 camPos = camera.getPosition();
-        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - camPos.x());
-        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - camPos.y());
-        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - camPos.z());
+        Vec3 cameraPos = camera.getPosition();
+        float x = (float) (Mth.lerp(tickPercentage, this.xo, this.x) - cameraPos.x());
+        float y = (float) (Mth.lerp(tickPercentage, this.yo, this.y) - cameraPos.y());
+        float z = (float) (Mth.lerp(tickPercentage, this.zo, this.z) - cameraPos.z());
 
-        // Angle particle along velocity axis
         Vector3f delta = new Vector3f((float) this.xd, (float) this.yd, (float) this.zd);
         delta.normalize();
         float angle = (float) Math.acos(delta.y());
         Vector3f axis = new Vector3f(-delta.z(), 0, delta.x());
         axis.normalize();
-        Quaternion quaternion = new Quaternion(axis.x(), axis.y(), axis.z(), -angle);
 
-        // Rotate to face camera
-        quaternion.mul(Vector3f.YN.rotation(this.roll));
+        Quaternion quaternion = new Quaternion(axis, -angle, false);
+        quaternion.mul(Vector3f.YN.rotationDegrees((float) Math.toDegrees(this.roll)));
         quaternion = this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
+
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, tickPercentage);
     }
 
@@ -141,13 +140,17 @@ public class RainParticle extends WeatherParticle {
 
     @OnlyIn(Dist.CLIENT)
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet spriteSet;
 
         public DefaultFactory(SpriteSet provider) {
+            this.spriteSet = provider;
         }
 
         @Override
         public Particle createParticle(SimpleParticleType parameters, ClientLevel level, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-            return new RainParticle(level, x, y, z);
+            RainParticle particle = new RainParticle(level, x, y, z);
+            particle.setSprite(this.spriteSet.get(level.random));
+            return particle;
         }
     }
 }

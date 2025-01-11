@@ -23,7 +23,7 @@ public class SnowParticle extends WeatherParticle {
         this.quadSize = ParticleRainClient.config.snow.size;
         this.gravity = ParticleRainClient.config.snow.gravity;
         this.yd = -gravity;
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "snow" + random.nextInt(4))));
+        //this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "snow" + random.nextInt(4))));
 
         if (level.isThundering()) {
             this.xd = gravity * ParticleRainClient.config.snow.stormWindStrength;
@@ -58,13 +58,17 @@ public class SnowParticle extends WeatherParticle {
 
     @OnlyIn(Dist.CLIENT)
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet spriteSet;
 
         public DefaultFactory(SpriteSet provider) {
+            this.spriteSet = provider;
         }
 
         @Override
         public Particle createParticle(SimpleParticleType parameters, ClientLevel level, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-            return new SnowParticle(level, x, y, z);
+            SnowParticle particle = new SnowParticle(level, x, y, z);
+            particle.setSprite(this.spriteSet.get(level.random));
+            return particle;
         }
     }
 }

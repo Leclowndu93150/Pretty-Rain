@@ -86,13 +86,12 @@ public abstract class WeatherParticle extends TextureSheetParticle {
         float dot = normal.dot(toCamera);
         if (dot > 0) {
             quaternion.mul(Vector3f.YP.rotationDegrees(180));
-            return quaternion;
         }
         return quaternion;
     }
 
     public void renderRotatedQuad(VertexConsumer vertexConsumer, Quaternion quaternion, float x, float y, float z, float tickPercentage) {
-        quaternion.mul(Vector3f.YP.rotationDegrees(180));
+        quaternion.mul(Vector3f.YP.rotationDegrees(180f));
         float quadSize = this.getQuadSize(tickPercentage);
         float u0 = this.getU0();
         float u1 = this.getU1();
@@ -106,15 +105,15 @@ public abstract class WeatherParticle extends TextureSheetParticle {
                 new Vector3f(1.0F, 1.0F, 0.0F),
                 new Vector3f(1.0F, -1.0F, 0.0F)};
 
-        for (int k = 0; k < 4; ++k) {
+        for(int k = 0; k < 4; ++k) {
             Vector3f vector3f = vector3fs[k];
             vector3f.transform(quaternion);
             vector3f.mul(quadSize);
             vector3f.add(x, y, z);
         }
-        vertexConsumer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z()).uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
-        vertexConsumer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
-        vertexConsumer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
-        vertexConsumer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z()).uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
+        vertexConsumer.vertex((double)vector3fs[0].x(), (double)vector3fs[0].y(), (double)vector3fs[0].z()).uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
+        vertexConsumer.vertex((double)vector3fs[1].x(), (double)vector3fs[1].y(), (double)vector3fs[1].z()).uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
+        vertexConsumer.vertex((double)vector3fs[2].x(), (double)vector3fs[2].y(), (double)vector3fs[2].z()).uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
+        vertexConsumer.vertex((double)vector3fs[3].x(), (double)vector3fs[3].y(), (double)vector3fs[3].z()).uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(lightColor).endVertex();
     }
 }
