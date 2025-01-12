@@ -13,9 +13,6 @@ repositories {
     maven {
         url "https://cursemaven.com"
     }
-    maven {
-        url = "https://maven.bawnorton.com/releases"
-    }
 }
 
 base {
@@ -104,7 +101,6 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation "curse.maven:cloth-config-348521:5729090"
-    runtimeOnly "curse.maven:effective-forge-557796:4017699"
 }
 
 mixin {
