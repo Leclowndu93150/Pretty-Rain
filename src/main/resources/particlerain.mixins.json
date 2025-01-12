@@ -12,7 +12,7 @@
     "LevelRendererMixin",
     "TextureAtlasMixin",
     "TextureSheetParticleMixin",
-    "WaterDropParticleMixin"
+    "WaterDropParticleProviderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

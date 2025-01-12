@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WaterDropParticle.class)
-public abstract class WaterDropParticleMixin extends TextureSheetParticleMixin {
+public abstract class WaterDropParticleMixin2 extends TextureSheetParticleMixin {
 
-    protected WaterDropParticleMixin(ClientLevel clientLevel, double d, double e, double f) {
+    protected WaterDropParticleMixin2(ClientLevel clientLevel, double d, double e, double f) {
         super(clientLevel, d, e, f);
     }
 
