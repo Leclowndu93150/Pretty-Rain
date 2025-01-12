@@ -1,8 +1,6 @@
 package com.leclowndu93150.particlerain.mixin;
 
-
 import com.leclowndu93150.particlerain.ClientStuff;
-import com.leclowndu93150.particlerain.ParticleRainClient;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.DripParticle;
 import net.minecraft.client.particle.Particle;
@@ -15,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(DripParticle.WaterFallProvider.class)
-public abstract class DripParticleWaterFallProviderMixin {
-    @Inject(method = "createParticle", at = @At("RETURN"))
+public class DripParticleWaterFallProviderMixin {
+    @Inject(method = "createParticle(Lnet/minecraft/core/particles/SimpleParticleType;Lnet/minecraft/client/multiplayer/ClientLevel;DDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At("RETURN"))
     private void onCreateParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, CallbackInfoReturnable<Particle> cir) {
-        if (ParticleRainClient.config.biomeTint) {
+        if (ClientStuff.config.biomeTint) {
             ClientStuff.applyWaterTint((TextureSheetParticle)cir.getReturnValue(), level, new BlockPos(x, y, z));
         }
     }
