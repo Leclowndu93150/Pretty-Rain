@@ -11,6 +11,7 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -54,6 +55,11 @@ public class GroundFogParticle extends WeatherParticle {
     public void remove() {
         if (this.isAlive()) ParticleRainClient.fogCount--;
         super.remove();
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(float partialTicks) {
+        return this.getBoundingBox().inflate(4.0);
     }
 
     @Override
