@@ -115,7 +115,11 @@ public class ClientStuff {
                 }
             }
 
-            addSprite(event, "ripple_1");
+            //loop from 0 to 7
+            for (int idx = 0; idx < 8; idx++) {
+                addSprite(event, "ripple_"+idx);
+            }
+
             for (String texture : new String[]{"streak", "ground_fog", "fog_dithered", "dust"}) {
                 addSprite(event, texture);
             }
