@@ -81,6 +81,8 @@ public class GroundFogParticle extends WeatherParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
+
+
     @OnlyIn(Dist.CLIENT)
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
 
