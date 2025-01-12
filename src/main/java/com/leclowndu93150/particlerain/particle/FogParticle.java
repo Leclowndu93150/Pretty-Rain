@@ -25,13 +25,17 @@ import java.awt.*;
 
 public class FogParticle extends WeatherParticle {
 
+    private static final float FADE_DURATION = 40f;
+    private float targetAlpha = 1.0f;
+    private float baseQuadSize;
+
     private FogParticle(ClientLevel level, double x, double y, double z, SpriteSet provider) {
         super(level, x, y, z);
         this.setSprite(provider.get(level.getRandom()));
         this.lifetime = ParticleRainClient.config.particleRadius * 5;
         final double distance = Minecraft.getInstance().cameraEntity.position().distanceTo(new Vec3(x, y, z));
         this.quadSize = (float) (ParticleRainClient.config.fog.size / distance);
-
+        this.baseQuadSize = (float) (ParticleRainClient.config.fog.size / distance);
         Color color = new Color(this.level.getBiome(this.pos).value().getFogColor()).darker();
         this.rCol = color.getRed() / 255F;
         this.gCol = color.getGreen() / 255F;
@@ -86,6 +90,27 @@ public class FogParticle extends WeatherParticle {
     @Override
     public ParticleRenderType getRenderType() {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    }
+
+    @Override
+    public void fadeIn() {
+        if (age < FADE_DURATION) {
+            float progress = age / FADE_DURATION;
+            this.alpha = Mth.lerp(progress, 0, targetAlpha);
+            this.quadSize = Mth.lerp(progress, 0, baseQuadSize);
+        }
+    }
+
+    @Override
+    public void fadeOut() {
+        float progress = Math.min((age - (lifetime - FADE_DURATION)) / FADE_DURATION, 1.0f);
+        if (progress > 0) {
+            this.alpha = Mth.lerp(progress, targetAlpha, 0);
+            this.quadSize = Mth.lerp(progress, baseQuadSize, 0);
+            if (progress >= 1.0f) {
+                remove();
+            }
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

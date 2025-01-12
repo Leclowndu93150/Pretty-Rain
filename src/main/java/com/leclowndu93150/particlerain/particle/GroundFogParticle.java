@@ -56,6 +56,11 @@ public class GroundFogParticle extends WeatherParticle {
     }
 
     @Override
+    public boolean shouldCull() {
+        return false;
+    }
+
+    @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float f) {
         Vec3 camPos = camera.getPosition();
         float x = (float) (Mth.lerp(f, this.xo, this.x) - camPos.x());
