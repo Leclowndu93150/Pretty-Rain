@@ -44,52 +44,35 @@ public abstract class TextureAtlasMixin {
         ParticleRainClient.particleCount = 0;
         ParticleRainClient.fogCount = 0;
 
-        // Load pre-split textures for rain and snow
-        for (int j2 = 0; j2 < 4; j2++) {
-            try {
-                NativeImage rainFrame = ClientStuff.loadTexture(resourceManager,
-                        new ResourceLocation(ParticleRainClient.MOD_ID, "textures/particle/rain" + j2 + ".png"));
-                NativeImage snowFrame = ClientStuff.loadTexture(resourceManager,
-                        new ResourceLocation(ParticleRainClient.MOD_ID, "textures/particle/snow" + j2 + ".png"));
-
-                if (ParticleRainClient.config.biomeTint) {
-                    ClientStuff.desaturateImage(rainFrame);
-                }
-
-                stitcher.registerSprite(ClientStuff.createInfo(
-                        new ResourceLocation(ParticleRainClient.MOD_ID, "particle/rain" + j2), rainFrame));
-                stitcher.registerSprite(ClientStuff.createInfo(
-                        new ResourceLocation(ParticleRainClient.MOD_ID, "particle/snow" + j2), snowFrame));
-            } catch (IOException e) {
-                e.printStackTrace();
+        // Load numbered textures first
+        for (int idx = 0; idx < 8; idx++) {
+            if (idx < 4) {
+                addTextureToAtlas(resourceManager, stitcher, "rain" + idx, "rain" + idx);
+                addTextureToAtlas(resourceManager, stitcher, "snow" + idx, "snow" + idx);
+                addTextureToAtlas(resourceManager, stitcher, "splash_" + idx, "splash_" + idx);
             }
+
         }
 
-        if (ParticleRainClient.config.biomeTint) {
-            for (int j2 = 0; j2 < 4; j2++) {
-                try {
-                    NativeImage splashImage = ClientStuff.loadTexture(resourceManager,
-                            new ResourceLocation("minecraft", "textures/particle/splash_" + j2 + ".png"));
-                    ClientStuff.desaturateImage(splashImage);
-                    stitcher.registerSprite(ClientStuff.createInfo(
-                            new ResourceLocation("minecraft", "particle/splash_" + j2), splashImage));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        addTextureToAtlas(resourceManager, stitcher, "ripple_" + 1, "ripple_" + 1);
 
-        for (int j2 = 0; j2 < 8; j2++) {
-            try {
-                NativeImage rippleFrame = ClientStuff.loadTexture(resourceManager,
-                        new ResourceLocation(ParticleRainClient.MOD_ID, "textures/particle/ripple_" + j2 + ".png"));
-                stitcher.registerSprite(ClientStuff.createInfo(
-                        new ResourceLocation(ParticleRainClient.MOD_ID, "particle/ripple_" + j2), rippleFrame));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        // Load single textures
+        String[] singles = {"streak", "ground_fog", "fog_dithered", "dust"};
+        for (String texture : singles) {
+            addTextureToAtlas(resourceManager, stitcher, texture, texture);
         }
 
         profiler.pop();
+    }
+
+    private void addTextureToAtlas(ResourceManager resourceManager, Stitcher stitcher, String texturePath, String particlePath) {
+        try {
+            NativeImage texture = ClientStuff.loadTexture(resourceManager,
+                    new ResourceLocation(ParticleRainClient.MOD_ID, "textures/particle/" + texturePath + ".png"));
+            stitcher.registerSprite(ClientStuff.createInfo(
+                    new ResourceLocation(ParticleRainClient.MOD_ID, "particle/" + particlePath), texture));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

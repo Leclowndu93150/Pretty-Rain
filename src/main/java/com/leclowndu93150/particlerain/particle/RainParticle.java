@@ -34,9 +34,6 @@ public class RainParticle extends WeatherParticle {
 
     protected RainParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
-
-        if (ParticleRainClient.config.biomeTint) ClientStuff.applyWaterTint(this, level, this.pos);
-
         this.quadSize = ParticleRainClient.config.rain.size;
         this.gravity = ParticleRainClient.config.rain.gravity;
         this.yd = -gravity;
@@ -150,6 +147,7 @@ public class RainParticle extends WeatherParticle {
         public Particle createParticle(SimpleParticleType parameters, ClientLevel level, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
             RainParticle particle = new RainParticle(level, x, y, z);
             particle.setSprite(this.spriteSet.get(level.random));
+            if (ParticleRainClient.config.biomeTint) ClientStuff.applyWaterTint(particle, level, new BlockPos(x, y, z));
             return particle;
         }
     }

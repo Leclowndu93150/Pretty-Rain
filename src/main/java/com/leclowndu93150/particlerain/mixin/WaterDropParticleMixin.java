@@ -2,13 +2,11 @@ package com.leclowndu93150.particlerain.mixin;
 
 import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.particle.WaterDropParticle;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -22,7 +20,7 @@ public abstract class WaterDropParticleMixin extends TextureSheetParticleMixin {
     @Override
     public void pickSprite(SpriteSet spriteSet, CallbackInfo ci) {
         if (ParticleRainClient.config.biomeTint) {
-            this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "splash" + random.nextInt(4))));
+            this.setSprite(spriteSet.get(level.random));
             ClientStuff.applyWaterTint((TextureSheetParticle) (Object) this, this.level, new BlockPos(x, y, z));
         }
     }

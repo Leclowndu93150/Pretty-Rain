@@ -1,12 +1,5 @@
 {
   "textures": [
-    "particlerain:ripple_0",
-    "particlerain:ripple_1",
-    "particlerain:ripple_2",
-    "particlerain:ripple_3",
-    "particlerain:ripple_4",
-    "particlerain:ripple_5",
-    "particlerain:ripple_6",
-    "particlerain:ripple_7"
+    "particlerain:ripple_1"
   ]
 }

@@ -1,18 +1,16 @@
 package com.leclowndu93150.particlerain.particle;
 
-import com.leclowndu93150.particlerain.ParticleRainClient;
+import com.leclowndu93150.particlerain.ClientStuff;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,13 +18,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class RippleParticle extends WeatherParticle {
 
-    private RippleParticle(ClientLevel level, double x, double y, double z) {
+    protected SpriteSet spriteSet;
+
+    private RippleParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet) {
         super(level, x, y, z);
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple_0")));
-        this.quadSize = 0.25F;
+        //this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple_0")));
+        this.quadSize = 0.1f;
         this.alpha = 0.1F;
         this.x = Math.round(this.x / (1F / 16F)) * (1F / 16F);
         this.z = Math.round(this.z / (1F / 16F)) * (1F / 16F);
+        this.spriteSet = spriteSet;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class RippleParticle extends WeatherParticle {
         super.tick();
         this.alpha = Mth.lerp(this.age / 9F, 0.3F, 0F);
         if (this.age > 8) this.remove();
-        this.setSprite(Minecraft.getInstance().particleEngine.textureAtlas.getSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "ripple_" + (this.age - 1))));
+        this.setSprite(this.spriteSet.get(level.random));
     }
 
     @Override
@@ -49,13 +50,7 @@ public class RippleParticle extends WeatherParticle {
         float y = (float) (Mth.lerp(f, this.yo, this.y) - camPos.y());
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
 
-        Quaternion quaternion = new Quaternion(-1, 0, 0, Mth.HALF_PI);
-        Vector3f normalizedPos = new Vector3f(x, y, z);
-        if(normalizedPos.normalize()) {
-            if(normalizedPos.dot(Vector3f.ZP) < 0) {
-                quaternion.mul(new Quaternion(0, 1, 0, Mth.PI));
-            }
-        }
+        Quaternion quaternion = new Quaternion(-1.6f, 0, 0, Mth.HALF_PI);
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, f);
     }
 
@@ -66,13 +61,17 @@ public class RippleParticle extends WeatherParticle {
 
     @OnlyIn(Dist.CLIENT)
     public static class DefaultFactory implements ParticleProvider<SimpleParticleType> {
-
+        private final SpriteSet spriteSet;
         public DefaultFactory(SpriteSet provider) {
+            this.spriteSet = provider;
         }
 
         @Override
         public Particle createParticle(SimpleParticleType parameters, ClientLevel level, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-            return new RippleParticle(level, x, y, z);
+            RippleParticle rippleParticle = new RippleParticle(level, x, y, z, this.spriteSet);
+            rippleParticle.setSprite(this.spriteSet.get(level.random));
+            if(ClientStuff.config.biomeTint) ClientStuff.applyWaterTint(rippleParticle, level, new BlockPos(x, y, z));
+            return rippleParticle;
         }
     }
 }
