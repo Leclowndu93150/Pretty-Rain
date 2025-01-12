@@ -1,8 +1,6 @@
 package com.leclowndu93150.particlerain;
 
 import com.leclowndu93150.particlerain.particle.*;
-import com.leclowndu93150.particlerain.particle.data.ParticleStitcher;
-import com.leclowndu93150.particlerain.particle.data.SpecialParticlesRegistry;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.ints.IntUnaryOperator;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -24,17 +22,13 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.awt.*;
 import java.io.File;
@@ -51,7 +45,6 @@ public class ClientStuff {
     public static boolean previousBiomeTintOption;
     public static boolean previousUseResolutionOption;
     public static int previousResolutionOption;
-    private static Object particleHandlers;
 
     static void registerParticles(ParticleFactoryRegisterEvent event) {
         ParticleEngine engine = Minecraft.getInstance().particleEngine;
@@ -65,15 +58,6 @@ public class ClientStuff {
         engine.register(ParticleRegistry.SHRUB.get(), ShrubParticle.DefaultFactory::new);
         engine.register(ParticleRegistry.RIPPLE.get(), RippleParticle.DefaultFactory::new);
         engine.register(ParticleRegistry.STREAK.get(), StreakParticle.DefaultFactory::new);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    static void setupClient() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        particleHandlers = new ParticleStitcher(modEventBus, List.of(
-                SpecialParticlesRegistry.SPLASH,
-                SpecialParticlesRegistry.LAVA_SPLASH
-        ));
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT)
@@ -134,11 +118,6 @@ public class ClientStuff {
             //loop from 0 to 7
             for (int idx = 0; idx < 8; idx++) {
                 addSprite(event, "ripple_"+idx);
-            }
-
-            //loop from 0 to 12
-            for (int idx = 0; idx < 13; idx++) {
-                addSprite(event, "water_splash_"+idx);
             }
 
             for (String texture : new String[]{"streak", "ground_fog", "fog_dithered", "dust"}) {

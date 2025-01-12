@@ -103,15 +103,6 @@ public class ModConfig implements ConfigData {
         public int spawnHeight = 64;
         public float size = 8F;
     }
-
-    @ConfigEntry.Gui.CollapsibleObject
-    public SplashOptions splashes = new SplashOptions();
-    public static class SplashOptions {
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 100)
-        public int density = 100;
-        public float alpha = 0.6F;
-    }
-
     @ConfigEntry.Gui.PrefixText
     public boolean renderVanillaWeather = false;
     public boolean tickVanillaWeather = false;
