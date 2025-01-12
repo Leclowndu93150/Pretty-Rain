@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "particlerain.refmap.json",
   "mixins": [
+    "EntityMixin",
+    "WaterFluidMixin"
   ],
   "client": [
     "DripParticleSplashMixin",

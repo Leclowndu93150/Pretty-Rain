@@ -66,12 +66,11 @@ public class GroundFogParticle extends WeatherParticle {
         float y = (float) (Mth.lerp(f, this.yo, this.y) - camPos.y());
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
 
-        Quaternion quaternion = new Quaternion(-1.6f, 0,0, Mth.HALF_PI);
+        Quaternion quaternion = new Quaternion(-1.6f, 0, 0, Mth.HALF_PI);
 
         this.quadSize = ParticleRainClient.config.groundFog.size * 0.125f;
 
-        this.roll = 0;
-        this.oRoll = 0;
+        this.alpha = 1.0f;
 
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y, z, f);
     }

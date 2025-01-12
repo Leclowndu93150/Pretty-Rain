@@ -25,6 +25,7 @@ public class ParticleRainClient{
             config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
             AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener(ClientStuff::saveListener);
             modEventBus.addListener(ClientStuff::registerParticles);
+            ClientStuff.setupClient();
         }
     }
 
