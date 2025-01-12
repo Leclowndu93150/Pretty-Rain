@@ -3,6 +3,7 @@ package com.leclowndu93150.particlerain.particle;
 import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRegistry;
+import com.leclowndu93150.particlerain.particle.render.PrettyRenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
@@ -14,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
@@ -132,7 +132,12 @@ public class RainParticle extends WeatherParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return PrettyRenderType.INSTANCE;
+    }
+
+    @Override
+    protected int getLightColor(float partialTicks) {
+        return 15728880; // Max brightness
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -147,7 +152,12 @@ public class RainParticle extends WeatherParticle {
         public Particle createParticle(SimpleParticleType parameters, ClientLevel level, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
             RainParticle particle = new RainParticle(level, x, y, z);
             particle.setSprite(this.spriteSet.get(level.random));
-            if (ClientStuff.config.biomeTint) ClientStuff.applyWaterTint(particle, level, new BlockPos(x, y, z));
+            /*
+            if (ClientStuff.config.biomeTint){
+                particle.setColor(1.0F, 1.0F, 1.0F);
+                ClientStuff.applyWaterTint(particle, level, new BlockPos(x, y, z));
+            }
+             */
             return particle;
         }
     }

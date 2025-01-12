@@ -10,7 +10,6 @@
     "DripParticleWaterFallProviderMixin",
     "DripParticleWaterHangProviderMixin",
     "LevelRendererMixin",
-    "TextureAtlasMixin",
     "TextureSheetParticleMixin",
     "WaterDropParticleProviderMixin"
   ],

@@ -10,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.commands.Commands;
@@ -24,6 +25,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -87,6 +89,37 @@ public class ClientStuff {
         }
     }
 
+    @Mod.EventBusSubscriber(modid = ParticleRainClient.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public class ClientEvents {
+        @SubscribeEvent
+        public static void onTextureStitch(TextureStitchEvent.Pre event) {
+            if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_PARTICLES)) return;
+
+            ParticleRainClient.particleCount = 0;
+            ParticleRainClient.fogCount = 0;
+
+            for (int idx = 0; idx < 8; idx++) {
+                if (idx < 4) {
+                    addSprite(event, "rain" + idx);
+                    addSprite(event, "snow" + idx);
+                    addSprite(event, "splash_" + idx);
+                }
+            }
+
+            addSprite(event, "ripple_1");
+
+            String[] singles = {"streak", "ground_fog", "fog_dithered", "dust"};
+            for (String texture : singles) {
+                addSprite(event, texture);
+            }
+        }
+
+        private static void addSprite(TextureStitchEvent.Pre event, String path) {
+            event.addSprite(new ResourceLocation(ParticleRainClient.MOD_ID, "particle/" + path));
+        }
+    }
+
+
     static InteractionResult saveListener(ConfigHolder<ModConfig> modConfigConfigHolder, ModConfig modConfig) {
         if (config.biomeTint != previousBiomeTintOption || config.ripple.useResourcepackResolution != previousUseResolutionOption || config.ripple.resolution != previousResolutionOption) {
             Minecraft.getInstance().reloadResourcePacks();
@@ -121,27 +154,6 @@ public class ClientStuff {
         return new TextureAtlasSprite.Info(location, image.getWidth(), image.getHeight(), AnimationMetadataSection.EMPTY);
     }
 
-    public static TextureAtlasSprite.Info splitImage(NativeImage source, int index, String name) {
-        int frameWidth = source.getWidth() / 4;
-        int frameHeight = source.getHeight();
-        NativeImage frame = new NativeImage(frameWidth, frameHeight, false);
-
-        for(int x = 0; x < frameWidth; x++) {
-            for(int y = 0; y < frameHeight; y++) {
-                frame.setPixelRGBA(x, y, source.getPixelRGBA(x + index * frameWidth, y));
-            }
-        }
-        if (!new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/" + name + index + ".png").exists()) {
-            System.out.println("Generating pretty rain texture: " + name + index + ".png");
-            try {
-                frame.writeToFile(new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/" + name + index + ".png"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return createInfo(new ResourceLocation(ParticleRainClient.MOD_ID, "particle/" + name + index), frame);
-    }
-
     public static void desaturateImage(NativeImage image) {
         for(int x = 0; x < image.getWidth(); x++) {
             for(int y = 0; y < image.getHeight(); y++) {
@@ -161,72 +173,6 @@ public class ClientStuff {
 
     public static double yLevelWindAdjustment(double y) {
         return Mth.clamp(0.01, 1, (y - 64) / 40);
-    }
-
-    public static int getRippleResolution(List<TextureAtlasSprite> sprites) {
-        if (config.ripple.useResourcepackResolution) {
-            ResourceLocation resourceLocation = new ResourceLocation("big_smoke_0");
-            for (TextureAtlasSprite sprite : sprites) {
-                if (sprite.getName().equals(resourceLocation)) {
-                    if (sprite.getWidth() < 256) {
-                        return sprite.getWidth();
-                    }
-                }
-            }
-        }
-        if (config.ripple.resolution < 4) config.ripple.resolution = 4;
-        if (config.ripple.resolution > 256) config.ripple.resolution = 256;
-        return config.ripple.resolution;
-    }
-
-    public static TextureAtlasSprite.Info generateRipple(int i, int size) {
-        float radius = ((size / 2F) / 8) * (i + 1);
-        NativeImage image = new NativeImage(size, size, true);
-        Color color = Color.WHITE;
-        int colorint = ((color.getAlpha() & 0xFF) << 24) |
-                ((color.getRed() & 0xFF) << 16) |
-                ((color.getGreen() & 0xFF) << 8)  |
-                ((color.getBlue() & 0xFF));
-        generateBresenhamCircle(image, size, (int) Mth.clamp(1, (size / 2F) - 1, radius), colorint);
-
-        if (!new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/ripple_" + i + ".png").exists()) {
-            System.out.println("Generating pretty rain texture: ripple_" + i + ".png");
-            try {
-                image.writeToFile(new File(System.getProperty("user.dir") + "/../src/main/resources/assets/particlerain/textures/particle/ripple_" + i + ".png"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return new TextureAtlasSprite.Info(new ResourceLocation(ParticleRainClient.MOD_ID, "particle/ripple_" + i), size, size, AnimationMetadataSection.EMPTY);
-    }
-
-    public static void generateBresenhamCircle(NativeImage image, int imgSize, int radius, int colorint) {
-        int centerX = imgSize / 2;
-        int centerY = imgSize / 2;
-        int x = 0, y = radius;
-        int d = 3 - 2 * radius;
-        drawCirclePixel(centerX, centerY, x, y, image, colorint);
-        while (y >= x){
-            if (d > 0) {
-                y--;
-                d = d + 4 * (x - y) + 10;
-            }
-            else
-                d = d + 4 * x + 6;
-            x++;
-            drawCirclePixel(centerX, centerY, x, y, image, colorint);
-        }
-    }
-
-    static void drawCirclePixel(int xc, int yc, int x, int y, NativeImage img, int col){
-        img.setPixelRGBA(xc+x, yc+y, col);
-        img.setPixelRGBA(xc-x, yc+y, col);
-        img.setPixelRGBA(xc+x, yc-y, col);
-        img.setPixelRGBA(xc-x, yc-y, col);
-        img.setPixelRGBA(xc+y, yc+x, col);
-        img.setPixelRGBA(xc-y, yc+x, col);
-        img.setPixelRGBA(xc+y, yc-x, col);
-        img.setPixelRGBA(xc-y, yc-x, col);
     }
 
 }
