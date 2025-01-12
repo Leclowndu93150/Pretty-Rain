@@ -42,6 +42,11 @@ public class GroundFogParticle extends WeatherParticle {
     }
 
     @Override
+    public boolean shouldCull() {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (this.onGround) this.remove();

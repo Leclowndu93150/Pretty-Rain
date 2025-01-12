@@ -152,12 +152,9 @@ public class RainParticle extends WeatherParticle {
         public Particle createParticle(SimpleParticleType parameters, ClientLevel level, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
             RainParticle particle = new RainParticle(level, x, y, z);
             particle.setSprite(this.spriteSet.get(level.random));
-            /*
             if (ClientStuff.config.biomeTint){
-                particle.setColor(1.0F, 1.0F, 1.0F);
                 ClientStuff.applyWaterTint(particle, level, new BlockPos(x, y, z));
             }
-             */
             return particle;
         }
     }

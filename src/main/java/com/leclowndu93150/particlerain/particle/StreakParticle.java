@@ -71,13 +71,8 @@ public class StreakParticle extends WeatherParticle {
         float y = (float) (Mth.lerp(f, this.yo, this.y) - camPos.y());
         float z = (float) (Mth.lerp(f, this.zo, this.z) - camPos.z());
 
-        Quaternion quaternion = new Quaternion(0, 1, 0, this.roll);
-        Vector3f normalizedPos = new Vector3f(x, y, z);
-        if(normalizedPos.normalize()) {
-            if(normalizedPos.dot(Vector3f.ZP) < 0) {
-                quaternion.mul(new Quaternion(0, 1, 0, Mth.PI));
-            }
-        }
+        Quaternion quaternion = Vector3f.YP.rotation(this.roll);
+        this.flipItTurnwaysIfBackfaced(quaternion, new Vector3f(x, y, z));
         this.renderRotatedQuad(vertexConsumer, quaternion, x, y + 0.25F, z, f);
     }
 

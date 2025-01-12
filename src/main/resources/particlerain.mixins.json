@@ -11,7 +11,7 @@
     "DripParticleWaterHangProviderMixin",
     "LevelRendererMixin",
     "TextureSheetParticleMixin",
-    "WaterDropParticleProviderMixin"
+    "WaterDropParticleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

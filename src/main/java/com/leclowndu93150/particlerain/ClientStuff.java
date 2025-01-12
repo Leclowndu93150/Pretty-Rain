@@ -98,18 +98,25 @@ public class ClientStuff {
             ParticleRainClient.particleCount = 0;
             ParticleRainClient.fogCount = 0;
 
-            for (int idx = 0; idx < 8; idx++) {
-                if (idx < 4) {
+            for (int idx = 0; idx < 4; idx++) {
+                try {
+                    if (ParticleRainClient.config.biomeTint) {
+                        NativeImage rainTexture = ClientStuff.loadTexture(
+                                Minecraft.getInstance().getResourceManager(),
+                                new ResourceLocation(ParticleRainClient.MOD_ID, "textures/particle/rain" + idx + ".png")
+                        );
+                        ClientStuff.applyToAllPixels(rainTexture, ClientStuff.desaturateOperation);
+                    }
                     addSprite(event, "rain" + idx);
                     addSprite(event, "snow" + idx);
                     addSprite(event, "splash_" + idx);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
 
             addSprite(event, "ripple_1");
-
-            String[] singles = {"streak", "ground_fog", "fog_dithered", "dust"};
-            for (String texture : singles) {
+            for (String texture : new String[]{"streak", "ground_fog", "fog_dithered", "dust"}) {
                 addSprite(event, texture);
             }
         }
@@ -143,6 +150,16 @@ public class ClientStuff {
         float gCol = (Mth.lerp(config.tintMix / 100F, waterColor.getGreen(), fogColor.getGreen()) / 255F);
         float bCol = (Mth.lerp(config.tintMix / 100F, waterColor.getBlue(), fogColor.getBlue()) / 255F);
         particle.setColor(rCol, gCol, bCol);
+    }
+
+    public static void applyToAllPixels(NativeImage image, IntUnaryOperator operator) {
+        for(int x = 0; x < image.getWidth(); x++) {
+            for(int y = 0; y < image.getHeight(); y++) {
+                int rgba = Integer.rotateLeft(image.getPixelRGBA(x, y), 8); // ABGR to RGBA
+                rgba = operator.applyAsInt(rgba);
+                image.setPixelRGBA(x, y, Integer.rotateRight(rgba, 8)); // RGBA back to ABGR
+            }
+        }
     }
 
     public static NativeImage loadTexture(ResourceManager manager, ResourceLocation location) throws IOException {
