@@ -49,21 +49,19 @@ public class ShrubParticle extends WeatherParticle {
                 itemStack = blockState.getBlock().asItem().getDefaultInstance();
                 final TextureAtlasSprite particleIcon = Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, null, 0).getParticleIcon();
                 try {
-                    //bakedQuad.hasTint is always true and i cant find anything else so i guess were gonna do some bullshit >:[
                     ResourceLocation resourceLocation = ResourceLocation.tryParse(particleIcon.contents().name().getNamespace() + ":models/" + particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
                     Resource resource = Minecraft.getInstance().getResourceManager().getResourceOrThrow(resourceLocation);
                     String string;
                     try (InputStream inputStream = resource.open()) {
                         string = new String(inputStream.readAllBytes());
                     }
-                    // works for most items
                     if (string.contains("tint")) {
                         final int colorInt = BiomeColors.getAverageFoliageColor(level, this.pos);
                         Color color = new Color(colorInt);
                         this.setColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    // Skip texture loading if it fails
                 }
             }
         } else {
