@@ -1,6 +1,7 @@
 package com.leclowndu93150.particlerain.particle;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
+import com.leclowndu93150.particlerain.particle.render.GroundFogRenderType;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -75,7 +76,7 @@ public class GroundFogParticle extends WeatherParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return GroundFogRenderType.INSTANCE;
     }
 
     @OnlyIn(Dist.CLIENT)
