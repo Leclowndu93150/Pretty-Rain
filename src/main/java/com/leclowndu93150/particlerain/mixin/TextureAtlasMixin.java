@@ -67,7 +67,7 @@ public abstract class TextureAtlasMixin {
 
     private void addTextureToAtlas(ResourceManager resourceManager, Stitcher stitcher, String texturePath, String particlePath) {
         try {
-            NativeImage texture = ClientStuff.loadTexture(resourceManager,
+            NativeImage texture = ClientStuff.loadTexture(
                     new ResourceLocation(ParticleRainClient.MOD_ID, "textures/particle/" + texturePath + ".png"));
             stitcher.registerSprite(ClientStuff.createInfo(
                     new ResourceLocation(ParticleRainClient.MOD_ID, "particle/" + particlePath), texture));
