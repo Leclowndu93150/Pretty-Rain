@@ -46,7 +46,7 @@ public class ParticleRainClient {
         ParticleRegistry.SOUND_EVENTS.register(modEventBus);
         ParticleRegistry.PARTICLE_TYPES.register(modEventBus);
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, ParticleRainConfig.SPEC, "prettyrain-client.toml");
         
         modEventBus.addListener(this::registerParticleFactories);
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
