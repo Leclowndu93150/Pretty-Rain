@@ -20,6 +20,7 @@ public class GroundFogRenderType implements ParticleRenderType {
 
     @Override
     public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+        RenderSystem.enableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
