@@ -21,6 +21,7 @@ public class GroundFogRenderType implements ParticleRenderType {
 
     @Override
     public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+        RenderSystem.enableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -29,6 +30,7 @@ public class GroundFogRenderType implements ParticleRenderType {
         RenderSystem.setShaderTexture(2, Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
+
 
     @Override
     public void end(Tesselator tesselator) {
