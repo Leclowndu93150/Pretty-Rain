@@ -6,7 +6,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-@Config(name = "particlerain")
+@Config(name = "prettyrain")
 public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip @ConfigEntry.Gui.PrefixText
     public int maxParticleAmount = 1500;
