@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -20,6 +21,7 @@ public class CustomGroundFogRenderType implements ParticleRenderType {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+        RenderSystem.setShaderTexture(2, Minecraft.getInstance().gameRenderer.lightTexture().lightTextureLocation);
         RenderSystem.setShader(GameRenderer::getParticleShader);
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
@@ -29,6 +31,7 @@ public class CustomGroundFogRenderType implements ParticleRenderType {
         tesselator.end();
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
+        RenderSystem.setShaderTexture(2, 0); // Disable light texture
     }
 
     @Override

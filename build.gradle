@@ -16,7 +16,7 @@ repositories {
 }
 
 base {
-    archivesName = mod_id
+    archivesName = mod_name+"-1.18.2-Forge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
