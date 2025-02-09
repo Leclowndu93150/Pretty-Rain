@@ -10,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +32,7 @@ import java.io.InputStream;
 
 public class ShrubParticle extends WeatherParticle {
 
-    protected ShrubParticle(ClientLevel level, double x, double y, double z) {
+    protected ShrubParticle(ClientWorld level, double x, double y, double z) {
         super(level, x, y, z);
         this.quadSize = 0.5F;
         this.lifetime = 80;

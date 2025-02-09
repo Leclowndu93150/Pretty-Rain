@@ -1,39 +1,39 @@
 package com.leclowndu93150.particlerain;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.particles.ParticleType;
+import net.minecraft.particles.BasicParticleType;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ParticleRegistry {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
-            DeferredRegister.create(Registry.PARTICLE_TYPE.key(), ParticleRainClient.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, ParticleRainClient.MOD_ID);
 
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
-            DeferredRegister.create(Registry.SOUND_EVENT.key(), ParticleRainClient.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, ParticleRainClient.MOD_ID);
 
-    public static final RegistryObject<SimpleParticleType> RAIN = PARTICLE_TYPES.register("rain",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> SNOW = PARTICLE_TYPES.register("snow",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> DUST_MOTE = PARTICLE_TYPES.register("dust_mote",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> DUST = PARTICLE_TYPES.register("dust",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FOG = PARTICLE_TYPES.register("fog",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> GROUND_FOG = PARTICLE_TYPES.register("ground_fog",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> SHRUB = PARTICLE_TYPES.register("shrub",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> RIPPLE = PARTICLE_TYPES.register("ripple",
-            () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> STREAK = PARTICLE_TYPES.register("streak",
-            () -> new SimpleParticleType(true));
+    public static final RegistryObject<BasicParticleType> RAIN = PARTICLE_TYPES.register("rain",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> SNOW = PARTICLE_TYPES.register("snow",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> DUST_MOTE = PARTICLE_TYPES.register("dust_mote",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> DUST = PARTICLE_TYPES.register("dust",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> FOG = PARTICLE_TYPES.register("fog",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> GROUND_FOG = PARTICLE_TYPES.register("ground_fog",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> SHRUB = PARTICLE_TYPES.register("shrub",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> RIPPLE = PARTICLE_TYPES.register("ripple",
+            () -> new BasicParticleType(true));
+    public static final RegistryObject<BasicParticleType> STREAK = PARTICLE_TYPES.register("streak",
+            () -> new BasicParticleType(true));
 
     public static final RegistryObject<SoundEvent> WEATHER_SNOW = SOUND_EVENTS.register("weather.snow",
             () -> new SoundEvent(new ResourceLocation(ParticleRainClient.MOD_ID, "weather.snow")));

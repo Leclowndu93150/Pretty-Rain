@@ -1,32 +1,31 @@
 package com.leclowndu93150.particlerain;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biome.Precipitation;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nullable;
+import javax.xml.ws.Holder;
 import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 public final class WeatherParticleSpawner {
 
-    private static final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+    private static final BlockPos.Mutable pos = new BlockPos.Mutable();
 
-    private static void spawnParticle(ClientLevel level, Holder<Biome> biome, double x, double y, double z) {
+    private static void spawnParticle(ClientWorld level, Holder<Biome> biome, double x, double y, double z) {
         if (!FMLEnvironment.dist.isClient()) return;
 
         if (ParticleRainClient.particleCount > ParticleRainClient.config.maxParticleAmount) {
@@ -68,7 +67,7 @@ public final class WeatherParticleSpawner {
         }
     }
 
-    public static void update(ClientLevel level, Entity entity, float partialTicks) {
+    public static void update(ClientWorld level, Entity entity, float partialTicks) {
         if (!FMLEnvironment.dist.isClient()) return;
 
         if (level.isRaining() || ParticleRainClient.config.alwaysRaining) {
@@ -92,9 +91,9 @@ public final class WeatherParticleSpawner {
 
                 float theta = (float) (2 * Math.PI * rand.nextFloat());
                 float phi = (float) Math.acos(2 * rand.nextFloat() - 1);
-                double x = ParticleRainClient.config.particleRadius * Mth.sin(phi) * Math.cos(theta);
-                double y = ParticleRainClient.config.particleRadius * Mth.sin(phi) * Math.sin(theta);
-                double z = ParticleRainClient.config.particleRadius * Mth.cos(phi);
+                double x = ParticleRainClient.config.particleRadius * MathHelper.sin(phi) * Math.cos(theta);
+                double y = ParticleRainClient.config.particleRadius * MathHelper.sin(phi) * Math.sin(theta);
+                double z = ParticleRainClient.config.particleRadius * MathHelper.cos(phi);
 
                 pos.set(x + entity.getX(), y + entity.getY(), z + entity.getZ());
                 if (level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
@@ -107,19 +106,19 @@ public final class WeatherParticleSpawner {
 
     @Nullable
     public static SoundEvent getBiomeSound(BlockPos blockPos, boolean above) {
-        Holder<Biome> biome = Minecraft.getInstance().level.getBiome(blockPos);
-        Precipitation precipitation = biome.value().getPrecipitation();
-        if (precipitation == Precipitation.RAIN && ParticleRainClient.config.doRainSounds) {
+        Biome biome = Minecraft.getInstance().level.getBiome(blockPos);
+        Biome.RainType rainType = biome.getPrecipitation();
+        if (rainType == Biome.RainType.RAIN && ParticleRainClient.config.doRainSounds) {
             return above ? SoundEvents.WEATHER_RAIN_ABOVE : SoundEvents.WEATHER_RAIN;
-        } else if (precipitation == Precipitation.SNOW && ParticleRainClient.config.doSnowSounds) {
+        } else if (rainType == Biome.RainType.SNOW && ParticleRainClient.config.doSnowSounds) {
             return above ? ParticleRegistry.WEATHER_SNOW_ABOVE.get() : ParticleRegistry.WEATHER_SNOW.get();
-        } else if (doesThisBlockHaveDustBlowing(precipitation, Minecraft.getInstance().level, blockPos, biome) && ParticleRainClient.config.doSandSounds) {
+        } else if (doesThisBlockHaveDustBlowing(rainType, Minecraft.getInstance().level, blockPos, biome) && ParticleRainClient.config.doSandSounds) {
             return above ? ParticleRegistry.WEATHER_SANDSTORM_ABOVE.get() : ParticleRegistry.WEATHER_SANDSTORM.get();
         }
         return null;
     }
 
-    public static boolean doesThisBlockHaveDustBlowing(Precipitation precipitation, ClientLevel level, BlockPos blockPos, Holder<Biome> biome) {
-        return precipitation == Precipitation.NONE && level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).below()).is(TagKey.create(Registry.BLOCK.key(), ResourceLocation.tryParse(ParticleRainClient.config.sand.matchTags))) && biome.value().getBaseTemperature() > 0.25;
+    public static boolean doesThisBlockHaveDustBlowing(Biome.RainType rainType, ClientWorld world, BlockPos blockPos, Biome biome) {
+        return rainType == Biome.RainType.NONE && world.getBlockState(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, blockPos).below()).is(BlockTags.SAND) && biome.getTemperature(blockPos) > 0.25;
     }
 }
