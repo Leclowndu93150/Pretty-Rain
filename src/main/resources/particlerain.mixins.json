@@ -11,7 +11,8 @@
     "LevelRendererMixin",
     "SpriteLoaderMixin",
     "TextureSheetParticleMixin",
-    "WaterDropParticleMixin"
+    "WaterDropParticleMixin",
+    "fix.ModListScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

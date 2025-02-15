@@ -3,6 +3,7 @@ package com.leclowndu93150.particlerain;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.gui.ModListScreen;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -26,5 +27,4 @@ public class ParticleRainClient{
         }
         ParticleRegistry.register(modEventBus);
     }
-
 }
