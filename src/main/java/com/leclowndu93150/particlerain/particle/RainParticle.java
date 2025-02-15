@@ -69,6 +69,7 @@ public class RainParticle extends WeatherParticle {
     @Override
     public void tick() {
         super.tick();
+        if(!this.level.getFluidState(this.pos.below(2)).isEmpty()) this.alpha = 0;
         if (this.onGround || !this.level.getFluidState(this.pos).isEmpty()) {
             // TODO: rewrite this whole bit
             if ((ParticleRainConfig.doSplashParticles || ParticleRainConfig.doSmokeParticles || ParticleRainConfig.doRippleParticles) && Minecraft.getInstance().cameraEntity.position().distanceTo(this.pos.getCenter()) < ParticleRainConfig.particleRadius - (ParticleRainConfig.particleRadius / 2.0)) {
