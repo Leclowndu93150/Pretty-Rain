@@ -42,8 +42,16 @@ public class SnowParticle extends WeatherParticle {
         }
     }
 
+    @Override
     public void tick() {
         super.tick();
+        if (!this.level.getFluidState(this.pos.below()).isEmpty()) {
+            this.alpha = 0;
+        } else if (!this.level.getFluidState(this.pos.below(2)).isEmpty()) {
+            double distanceToWater = this.pos.below(2).getY() - this.pos.getY();
+            this.alpha = (float) Math.abs(distanceToWater) / 2.0f;
+        }
+
         this.oRoll = this.roll;
         this.roll = this.oRoll + (level.isThundering() ? ParticleRainClient.config.snow.stormRotationAmount : ParticleRainClient.config.snow.rotationAmount) * this.rotationAmount;
         if (this.onGround || this.removeIfObstructed()) {

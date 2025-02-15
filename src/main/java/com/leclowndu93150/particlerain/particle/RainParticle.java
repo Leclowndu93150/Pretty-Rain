@@ -61,6 +61,7 @@ public class RainParticle extends WeatherParticle {
     @Override
     public void tick() {
         super.tick();
+        if(!this.level.getFluidState(this.pos.below(2)).isEmpty()) this.alpha = 0;
         if (this.age < 10) this.alpha = Math.clamp(0, ParticleRainClient.config.rain.opacity / 100F, this.alpha);
         if (this.onGround || !this.level.getFluidState(this.pos).isEmpty()) {
             // TODO: rewrite this whole bit
