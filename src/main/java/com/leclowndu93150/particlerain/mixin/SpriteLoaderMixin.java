@@ -2,50 +2,40 @@ package com.leclowndu93150.particlerain.mixin;
 
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.leclowndu93150.particlerain.ParticleRainConfig;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.renderer.texture.SpriteContents;
-import net.minecraft.client.renderer.texture.SpriteLoader;
-import net.minecraft.client.renderer.texture.Stitcher;
+import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.Map;
 
 @Mixin(SpriteLoader.class)
 public abstract class SpriteLoaderMixin {
-
+    @Shadow @Final private int minHeight;
+    @Shadow @Final private int minWidth;
     @Shadow @Final private ResourceLocation location;
+    @Shadow @Final private int maxSupportedTextureSize;
 
-    @Unique
-    List<SpriteContents> spriteContentsList;
+    @Shadow protected abstract Map<ResourceLocation, TextureAtlasSprite> getStitchedSprites(Stitcher<SpriteContents> stitcher, int width, int height);
 
-    @Inject(method = "stitch", at = @At("HEAD"))
-    public void stitch(List<SpriteContents> list, int i, Executor executor, CallbackInfoReturnable<SpriteLoader.Preparations> cir) {
-        this.spriteContentsList = list;
-    }
+    @ModifyVariable(method = "stitch", at = @At("HEAD"), argsOnly = true)
+    public List<SpriteContents> modifySpriteContents(List<SpriteContents> list) {
+        List<SpriteContents> newList = new ArrayList<>(list);
 
-    @ModifyExpressionValue(
-            method = "stitch",
-            at = @At(value = "NEW", args = "class=net/minecraft/client/renderer/texture/Stitcher")
-    )
-    private Stitcher<SpriteContents> registerWeatherParticles(Stitcher<SpriteContents> stitcher) {
-        if (this.location.equals(ResourceLocation.withDefaultNamespace("textures/atlas/particles.png"))) {
-            // resource reload clears all particles. we can just reset the counter here instead of registering a listener.
+        if (this.location.equals(ResourceLocation.tryParse("textures/atlas/particles.png"))) {
+            System.out.println("Registering weather particles");
             ParticleRainClient.particleCount = 0;
             ParticleRainClient.fogCount = 0;
 
-            // load weather textures
             NativeImage rainImage = null;
             NativeImage snowImage = null;
             try {
@@ -56,32 +46,35 @@ public abstract class SpriteLoaderMixin {
                 e.printStackTrace();
             }
 
-            // split both weather textures into four sprites
-            for (int i = 0; i < 4; i++) {
-                stitcher.registerSprite(ParticleRainClient.splitImage(rainImage, i, "rain"));
+            for (int j = 0; j < 4; j++) {
+                newList.add(ParticleRainClient.splitImage(rainImage, j, "rain"));
             }
-            for (int i = 0; i < 4; i++) {
-                stitcher.registerSprite(ParticleRainClient.splitImage(snowImage, i, "snow"));
+            for (int j = 0; j < 4; j++) {
+                newList.add(ParticleRainClient.splitImage(snowImage, j, "snow"));
             }
-            // generate ripple sprites
-            int rippleResolution = ParticleRainClient.getRippleResolution(this.spriteContentsList);
-            for (int i = 0; i < 8; i++) {
-                stitcher.registerSprite(ParticleRainClient.generateRipple(i, rippleResolution));
+
+            int rippleResolution = ParticleRainClient.getRippleResolution(newList);
+            for (int j = 0; j < 8; j++) {
+                newList.add(ParticleRainClient.generateRipple(j, rippleResolution));
             }
-            // create gray versions of the default splashes so tint can be applied
+
             if (ParticleRainConfig.biomeTint) {
-                for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
                     NativeImage splashImage = null;
                     try {
-                        splashImage = ParticleRainClient.loadTexture(ResourceLocation.withDefaultNamespace("textures/particle/splash_" + i + ".png"));
+                        splashImage = ParticleRainClient.loadTexture(ResourceLocation.withDefaultNamespace("textures/particle/splash_" + j + ".png"));
                         splashImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    stitcher.registerSprite(new SpriteContents(ResourceLocation.fromNamespaceAndPath(ParticleRainClient.MODID, "splash" + i), new FrameSize(splashImage.getWidth(), splashImage.getHeight()), splashImage, new ResourceMetadata.Builder().build()));
+                    newList.add(new SpriteContents(ResourceLocation.fromNamespaceAndPath(ParticleRainClient.MODID, "splash" + j),
+                            new FrameSize(splashImage.getWidth(), splashImage.getHeight()),
+                            splashImage,
+                            ResourceMetadata.EMPTY));
                 }
             }
         }
-        return stitcher;
+
+        return newList;
     }
 }
