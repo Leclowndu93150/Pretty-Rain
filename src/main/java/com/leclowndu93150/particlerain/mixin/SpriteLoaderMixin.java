@@ -3,8 +3,6 @@ package com.leclowndu93150.particlerain.mixin;
 import com.leclowndu93150.particlerain.ClientStuff;
 import com.leclowndu93150.particlerain.ParticleRainClient;
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.CrashReport;
-import net.minecraft.ReportedException;
 import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
@@ -14,13 +12,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @Mixin(SpriteLoader.class)
@@ -29,25 +26,12 @@ public abstract class SpriteLoaderMixin {
     @Shadow @Final private int minWidth;
     @Shadow @Final private ResourceLocation location;
     @Shadow @Final private int maxSupportedTextureSize;
-    @Unique private List<SpriteContents> spriteContentsList;
 
-    @Inject(method = "stitch", at = @At("HEAD"))
-    public void stitch(List<SpriteContents> list, int i, Executor executor, CallbackInfoReturnable<SpriteLoader.Preparations> cir) {
-        this.spriteContentsList = list;
-    }
+    @Shadow protected abstract Map<ResourceLocation, TextureAtlasSprite> getStitchedSprites(Stitcher<SpriteContents> stitcher, int width, int height);
 
-    @Inject(
-            method = "stitch",
-            at = @At(
-                    value = "NEW",
-                    target = "net/minecraft/client/renderer/texture/Stitcher",
-                    ordinal = 0
-            ),
-            cancellable = true
-    )
-    private void registerWeatherParticles(List<SpriteContents> list, int i, Executor executor, CallbackInfoReturnable<SpriteLoader.Preparations> cir) {
-        Stitcher<SpriteContents> stitcher = new Stitcher<>(this.maxSupportedTextureSize, this.maxSupportedTextureSize, i);
-        System.out.println("Registering weather particles before the if statement");
+    @ModifyVariable(method = "stitch", at = @At("HEAD"), argsOnly = true)
+    public List<SpriteContents> modifySpriteContents(List<SpriteContents> list) {
+        List<SpriteContents> newList = new ArrayList<>(list);
 
         if (this.location.equals(ResourceLocation.tryParse("textures/atlas/particles.png"))) {
             System.out.println("Registering weather particles");
@@ -57,23 +41,23 @@ public abstract class SpriteLoaderMixin {
             NativeImage rainImage = null;
             NativeImage snowImage = null;
             try {
-                rainImage = ClientStuff.loadTexture(new ResourceLocation("minecraft","textures/environment/rain.png"));
-                snowImage = ClientStuff.loadTexture(new ResourceLocation("minecraft","textures/environment/snow.png"));
+                rainImage = ClientStuff.loadTexture(new ResourceLocation("minecraft", "textures/environment/rain.png"));
+                snowImage = ClientStuff.loadTexture(new ResourceLocation("minecraft", "textures/environment/snow.png"));
                 if (ParticleRainClient.config.biomeTint) rainImage.applyToAllPixels(ClientStuff.desaturateOperation);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             for (int j = 0; j < 4; j++) {
-                stitcher.registerSprite(ClientStuff.splitImage(rainImage, j, "rain"));
+                newList.add(ClientStuff.splitImage(rainImage, j, "rain"));
             }
             for (int j = 0; j < 4; j++) {
-                stitcher.registerSprite(ClientStuff.splitImage(snowImage, j, "snow"));
+                newList.add(ClientStuff.splitImage(snowImage, j, "snow"));
             }
 
-            int rippleResolution = ClientStuff.getRippleResolution(this.spriteContentsList);
+            int rippleResolution = ClientStuff.getRippleResolution(newList);
             for (int j = 0; j < 8; j++) {
-                stitcher.registerSprite(ClientStuff.generateRipple(j, rippleResolution));
+                newList.add(ClientStuff.generateRipple(j, rippleResolution));
             }
 
             if (ParticleRainClient.config.biomeTint) {
@@ -85,7 +69,7 @@ public abstract class SpriteLoaderMixin {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    stitcher.registerSprite(new SpriteContents(new ResourceLocation(ParticleRainClient.MOD_ID, "splash" + j),
+                    newList.add(new SpriteContents(new ResourceLocation(ParticleRainClient.MOD_ID, "splash" + j),
                             new FrameSize(splashImage.getWidth(), splashImage.getHeight()),
                             splashImage,
                             AnimationMetadataSection.EMPTY));
@@ -93,33 +77,6 @@ public abstract class SpriteLoaderMixin {
             }
         }
 
-        for(SpriteContents contents : list) {
-            stitcher.registerSprite(contents);
-        }
-
-        try {
-            stitcher.stitch();
-        } catch (StitcherException var16) {
-            throw new ReportedException(CrashReport.forThrowable(var16, "Stitching"));
-        }
-
-        int width = Math.max(stitcher.getWidth(), this.minWidth);
-        int height = Math.max(stitcher.getHeight(), this.minHeight);
-
-        Map<ResourceLocation, TextureAtlasSprite> regions = this.getStitchedSprites(stitcher, width, height);
-        TextureAtlasSprite missingSprite = regions.get(MissingTextureAtlasSprite.getLocation());
-
-        CompletableFuture<Void> future;
-        if (i > 0) {
-            future = CompletableFuture.runAsync(() -> {
-                regions.values().forEach(sprite -> sprite.contents().increaseMipLevel(i));
-            }, executor);
-        } else {
-            future = CompletableFuture.completedFuture(null);
-        }
-
-        cir.setReturnValue(new SpriteLoader.Preparations(width, height, i, missingSprite, regions, future));
+        return newList;
     }
-
-    @Shadow protected abstract Map<ResourceLocation, TextureAtlasSprite> getStitchedSprites(Stitcher<SpriteContents> stitcher, int width, int height);
 }
