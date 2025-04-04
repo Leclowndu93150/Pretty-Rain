@@ -24,6 +24,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Math;
@@ -80,6 +81,12 @@ public class ClientStuff {
 
         @SubscribeEvent
         public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+            particleCount = 0;
+            fogCount = 0;
+        }
+
+        @SubscribeEvent
+        public void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event){
             particleCount = 0;
             fogCount = 0;
         }

@@ -3,9 +3,9 @@ package com.leclowndu93150.particlerain;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.gui.ModListScreen;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
 
@@ -25,6 +25,11 @@ public class ParticleRainClient{
             config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
             AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener(ClientStuff::saveListener);
         }
+        modEventBus.addListener(this::commonSetup);
         ParticleRegistry.register(modEventBus);
+    }
+
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(NetworkHandler::init);
     }
 }
