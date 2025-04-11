@@ -80,13 +80,13 @@ public class ClientStuff {
         }
 
         @SubscribeEvent
-        public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        public static void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
             particleCount = 0;
             fogCount = 0;
         }
 
         @SubscribeEvent
-        public void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event){
+        public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event){
             particleCount = 0;
             fogCount = 0;
         }
