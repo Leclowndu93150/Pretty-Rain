@@ -80,7 +80,13 @@ public class ClientStuff {
         }
 
         @SubscribeEvent
-        public void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        public static void onPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+            particleCount = 0;
+            fogCount = 0;
+        }
+
+        @SubscribeEvent
+        public static void onPlayerClone(ClientPlayerNetworkEvent.Clone event) {
             particleCount = 0;
             fogCount = 0;
         }
