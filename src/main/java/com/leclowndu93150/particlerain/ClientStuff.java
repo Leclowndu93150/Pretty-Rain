@@ -86,7 +86,7 @@ public class ClientStuff {
         }
 
         @SubscribeEvent
-        public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event){
+        public static void onPlayerClone(ClientPlayerNetworkEvent.Clone event) {
             particleCount = 0;
             fogCount = 0;
         }
