@@ -10,12 +10,14 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,24 +41,35 @@ public class ShrubParticle extends WeatherParticle {
         this.gravity = ParticleRainConfig.ShrubOptions.gravity;
         this.xd = ParticleRainConfig.SandOptions.windStrength;
         this.zd = ParticleRainConfig.SandOptions.windStrength;
-        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F; //otherwise they get stuck and despawn for some reason >:?
+        if (ParticleRainConfig.SandOptions.spawnOnGround) this.yd = 0.1F;
 
         ItemStack itemStack = new ItemStack(Items.DEAD_BUSH);
+        ItemStackRenderState renderState = new ItemStackRenderState();
 
         BlockState blockState = level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.pos));
         if (blockState.is(BlockTags.SWORD_EFFICIENT)) {
             if (!blockState.is(BlockTags.CROPS)) {
                 itemStack = blockState.getBlock().asItem().getDefaultInstance();
-                final TextureAtlasSprite particleIcon = Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, null, 0).getParticleIcon();
+
+                Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                        renderState,
+                        itemStack,
+                        ItemDisplayContext.NONE,
+                        level,
+                        null,
+                        0
+                );
+
+                TextureAtlasSprite particleIcon = renderState.layers[0].particleIcon;
+
                 try {
-                    //bakedQuad.hasTint is always true and i cant find anything else so i guess were gonna do some bullshit >:[
-                    ResourceLocation resourceLocation = ResourceLocation.parse(particleIcon.contents().name().getNamespace() + ":models/" + particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
+                    ResourceLocation resourceLocation = ResourceLocation.parse(particleIcon.contents().name().getNamespace() + ":models/" +
+                            particleIcon.contents().name().toString().substring(particleIcon.contents().name().getNamespace().toString().length() + 1) + ".json");
                     Resource resource = Minecraft.getInstance().getResourceManager().getResourceOrThrow(resourceLocation);
                     String string;
                     try (InputStream inputStream = resource.open()) {
                         string = new String(inputStream.readAllBytes());
                     }
-                    // works for most items
                     if (string.contains("tint")) {
                         final int colorInt = BiomeColors.getAverageFoliageColor(level, this.pos);
                         Color color = new Color(colorInt);
@@ -70,7 +83,9 @@ public class ShrubParticle extends WeatherParticle {
             if (level.random.nextFloat() < 0.9) this.remove();
         }
 
-        this.setSprite(Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, null, 0).getParticleIcon());
+        Minecraft.getInstance().getItemModelResolver().updateForTopItem(renderState, itemStack, ItemDisplayContext.NONE, level, null, 0);
+        assert renderState.layers[0].particleIcon != null;
+        this.setSprite(renderState.layers[0].particleIcon);
     }
 
     @Override

@@ -10,6 +10,7 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntUnaryOperator;
 
 @Mixin(SpriteLoader.class)
 public abstract class SpriteLoaderMixin {
@@ -41,7 +43,7 @@ public abstract class SpriteLoaderMixin {
             try {
                 rainImage = ParticleRainClient.loadTexture(ResourceLocation.withDefaultNamespace("textures/environment/rain.png"));
                 snowImage = ParticleRainClient.loadTexture(ResourceLocation.withDefaultNamespace("textures/environment/snow.png"));
-                if (ParticleRainConfig.biomeTint) rainImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
+                if (ParticleRainConfig.biomeTint) applyToAllPixelsManual(rainImage,ParticleRainClient.desaturateOperation);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,7 +65,7 @@ public abstract class SpriteLoaderMixin {
                     NativeImage splashImage = null;
                     try {
                         splashImage = ParticleRainClient.loadTexture(ResourceLocation.withDefaultNamespace("textures/particle/splash_" + j + ".png"));
-                        splashImage.applyToAllPixels(ParticleRainClient.desaturateOperation);
+                        applyToAllPixelsManual(splashImage,ParticleRainClient.desaturateOperation);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -76,5 +78,16 @@ public abstract class SpriteLoaderMixin {
         }
 
         return newList;
+    }
+
+    @Unique
+    private static void applyToAllPixelsManual(NativeImage image, IntUnaryOperator operation) {
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int color = image.getPixel(x, y);
+                int newColor = operation.applyAsInt(color);
+                image.setPixel(x, y, newColor);
+            }
+        }
     }
 }

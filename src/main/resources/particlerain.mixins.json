@@ -8,10 +8,10 @@
   ],
   "client": [
     "DripParticleMixin",
-    "LevelRendererMixin",
     "SpriteLoaderMixin",
     "TextureSheetParticleMixin",
-    "WaterDropParticleMixin"
+    "WaterDropParticleMixin",
+    "WeatherEffectRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
