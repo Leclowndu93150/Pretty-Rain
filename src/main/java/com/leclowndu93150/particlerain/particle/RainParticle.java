@@ -61,6 +61,11 @@ public class RainParticle extends WeatherParticle {
     @Override
     public void tick() {
         super.tick();
+
+        float currentQuadSize = this.getQuadSize(1.0f);
+        float boundingSize = currentQuadSize * 1.415f; // sqrt(2) ≈ 1.415 to account for rotation
+        this.setSize(boundingSize, boundingSize);
+
         if(!this.level.getFluidState(this.pos.below(2)).isEmpty()) this.alpha = 0;
         if (this.age < 10) this.alpha = Math.clamp(0, ParticleRainClient.config.rain.opacity / 100F, this.alpha);
         if (this.onGround || !this.level.getFluidState(this.pos).isEmpty()) {

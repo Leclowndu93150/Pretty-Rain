@@ -37,7 +37,7 @@ public class GroundFogRenderType implements ParticleRenderType {
         tesselator.end();
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
-        RenderSystem.setShaderTexture(2, 0); // Disable light texture
+        //RenderSystem.setShaderTexture(2, 0); // Disable light texture
     }
 
     @Override
