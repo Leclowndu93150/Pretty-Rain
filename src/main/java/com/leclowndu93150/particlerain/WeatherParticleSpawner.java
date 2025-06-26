@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
@@ -73,22 +74,33 @@ public final class WeatherParticleSpawner {
 
         if (level.isRaining() || ParticleRainClient.config.alwaysRaining) {
             int density;
+            
+            // A bug in TerraFirmaCraft causes level.getRainLevel() to return unreasonable values.
+            // To prevent other mods from breaking our particle system, clamp the value between 0 and 1.
+            float rainLevel = level.getRainLevel(partialTicks);
+            if (rainLevel < 0 || rainLevel > 1) {
+                ParticleRainClient.LOGGER.warn("World's rain level is out of bounds: " + rainLevel);
+                rainLevel = Mth.clamp(rainLevel, 0, 1);
+            }
+
             if (level.isThundering())
                 if (ParticleRainClient.config.alwaysRaining) {
                     density = ParticleRainClient.config.particleStormDensity;
                 } else {
-                    density = (int) (ParticleRainClient.config.particleStormDensity * level.getRainLevel(partialTicks));
+                    density = (int) (ParticleRainClient.config.particleStormDensity * rainLevel);
                 }
             else if (ParticleRainClient.config.alwaysRaining) {
                 density = ParticleRainClient.config.particleDensity;
             } else {
-                density = (int) (ParticleRainClient.config.particleDensity * level.getRainLevel(partialTicks));
+                density = (int) (ParticleRainClient.config.particleDensity * rainLevel);
             }
 
-
             RandomSource rand = RandomSource.create();
-
+            
+            ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
+            profiler.push("spawnRainParticles");
             for (int pass = 0; pass < density; pass++) {
+                profiler.push("randomizeParticle");
 
                 float theta = (float) (2 * Math.PI * rand.nextFloat());
                 float phi = (float) Math.acos(2 * rand.nextFloat() - 1);
@@ -97,11 +109,16 @@ public final class WeatherParticleSpawner {
                 double z = ParticleRainClient.config.particleRadius * Mth.cos(phi);
 
                 pos.set(x + entity.getX(), y + entity.getY(), z + entity.getZ());
-                if (level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
+                if (level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY()) {
+                    profiler.pop();
                     continue;
-
+                }
+                
+                profiler.popPush("spawnParticle");
                 spawnParticle(level, level.getBiome(pos), pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat());
+                profiler.pop();
             }
+            profiler.pop();
         }
     }
 

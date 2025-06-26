@@ -74,7 +74,10 @@ public class ClientStuff {
             if(event.phase == TickEvent.Phase.END){
                 Minecraft minecraft = Minecraft.getInstance();
                 if (!minecraft.isPaused() && minecraft.level != null && minecraft.getCameraEntity() != null) {
+                    // Profiler phase to find the source of lag when combined with other mods
+                    minecraft.getProfiler().push("updateWeatherParticles");
                     WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTimeNs());
+                    minecraft.getProfiler().pop();
                 }
             }
         }
