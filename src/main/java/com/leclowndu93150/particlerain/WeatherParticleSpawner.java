@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
@@ -96,12 +95,8 @@ public final class WeatherParticleSpawner {
             }
 
             RandomSource rand = RandomSource.create();
-            
-            ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
-            profiler.push("spawnRainParticles");
-            for (int pass = 0; pass < density; pass++) {
-                profiler.push("randomizeParticle");
 
+            for (int pass = 0; pass < density; pass++) {
                 float theta = (float) (2 * Math.PI * rand.nextFloat());
                 float phi = (float) Math.acos(2 * rand.nextFloat() - 1);
                 double x = ParticleRainClient.config.particleRadius * Mth.sin(phi) * Math.cos(theta);
@@ -109,16 +104,11 @@ public final class WeatherParticleSpawner {
                 double z = ParticleRainClient.config.particleRadius * Mth.cos(phi);
 
                 pos.set(x + entity.getX(), y + entity.getY(), z + entity.getZ());
-                if (level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY()) {
-                    profiler.pop();
+                if (level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) > pos.getY())
                     continue;
-                }
                 
-                profiler.popPush("spawnParticle");
                 spawnParticle(level, level.getBiome(pos), pos.getX() + rand.nextFloat(), pos.getY() + rand.nextFloat(), pos.getZ() + rand.nextFloat());
-                profiler.pop();
             }
-            profiler.pop();
         }
     }
 
