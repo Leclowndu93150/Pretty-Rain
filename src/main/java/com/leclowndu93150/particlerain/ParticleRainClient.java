@@ -1,8 +1,5 @@
 package com.leclowndu93150.particlerain;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,7 +16,6 @@ public class ParticleRainClient{
     public static int particleCount;
     public static int fogCount;
     public static ModConfig config;
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public ParticleRainClient() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

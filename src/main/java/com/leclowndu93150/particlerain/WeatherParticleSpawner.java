@@ -73,25 +73,17 @@ public final class WeatherParticleSpawner {
 
         if (level.isRaining() || ParticleRainClient.config.alwaysRaining) {
             int density;
-            
-            // A bug in TerraFirmaCraft causes level.getRainLevel() to return unreasonable values.
-            // To prevent other mods from breaking our particle system, clamp the value between 0 and 1.
-            float rainLevel = level.getRainLevel(partialTicks);
-            if (rainLevel < 0 || rainLevel > 1) {
-                ParticleRainClient.LOGGER.warn("World's rain level is out of bounds: " + rainLevel);
-                rainLevel = Mth.clamp(rainLevel, 0, 1);
-            }
 
             if (level.isThundering())
                 if (ParticleRainClient.config.alwaysRaining) {
                     density = ParticleRainClient.config.particleStormDensity;
                 } else {
-                    density = (int) (ParticleRainClient.config.particleStormDensity * rainLevel);
+                    density = (int) (ParticleRainClient.config.particleStormDensity * level.getRainLevel(partialTicks));
                 }
             else if (ParticleRainClient.config.alwaysRaining) {
                 density = ParticleRainClient.config.particleDensity;
             } else {
-                density = (int) (ParticleRainClient.config.particleDensity * rainLevel);
+                density = (int) (ParticleRainClient.config.particleDensity * level.getRainLevel(partialTicks));
             }
 
             RandomSource rand = RandomSource.create();
