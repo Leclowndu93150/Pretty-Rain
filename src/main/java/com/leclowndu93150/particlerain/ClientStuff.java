@@ -74,7 +74,7 @@ public class ClientStuff {
             if(event.phase == TickEvent.Phase.END){
                 Minecraft minecraft = Minecraft.getInstance();
                 if (!minecraft.isPaused() && minecraft.level != null && minecraft.getCameraEntity() != null) {
-                    WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTimeNs());
+                    WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTime());
                 }
             }
         }
