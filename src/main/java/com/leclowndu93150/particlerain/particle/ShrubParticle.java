@@ -28,7 +28,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.awt.*;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class ShrubParticle extends WeatherParticle {
@@ -39,7 +38,7 @@ public class ShrubParticle extends WeatherParticle {
         this.gravity = ParticleRainClient.config.shrub.gravity;
         this.xd = ParticleRainClient.config.sand.windStrength;
         this.zd = ParticleRainClient.config.sand.windStrength;
-        if (ParticleRainClient.config.sand.spawnOnGround) this.yd = 0.1F; //otherwise they get stuck and despawn for some reason >:?
+        if (ParticleRainClient.config.sand.spawnOnGround) this.yd = 0.1F;
 
         ItemStack itemStack = new ItemStack(Items.DEAD_BUSH);
 
@@ -61,7 +60,7 @@ public class ShrubParticle extends WeatherParticle {
                         this.setColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
                     }
                 } catch (Exception e) {
-                    // Skip texture loading if it fails
+                    itemStack = new ItemStack(Items.DEAD_BUSH);
                 }
             }
         } else {

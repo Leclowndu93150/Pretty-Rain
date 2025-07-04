@@ -29,6 +29,8 @@ public class ParticleRainClient{
         ParticleRegistry.register(modEventBus);
     }
 
+    //do cloud height config in 1.21.1
+
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(NetworkHandler::init);
     }

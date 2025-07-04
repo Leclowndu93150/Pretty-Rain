@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,7 +37,7 @@ public class LevelRendererMixin {
 
     @Inject(method = "tickRain", at = @At("HEAD"), cancellable = true)
     public void tickRain(Camera camera, CallbackInfo ci) {
-        if (!ParticleRainClient.config.tickVanillaWeather) {
+        if (!ParticleRainClient.config.tickVanillaWeather && ModList.get().isLoaded("simpleclouds")) {
             float f = this.minecraft.level.getRainLevel(1.0F);
             if (f > 0.0F) {
                 Random random = new Random((long) this.ticks * 312987231L);
