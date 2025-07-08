@@ -86,7 +86,7 @@ public class ParticleRainClient {
     private void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         if (!minecraft.isPaused() && minecraft.level != null && minecraft.getCameraEntity() != null) {
-            WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getFrameTime());
+            WeatherParticleSpawner.update(minecraft.level, minecraft.getCameraEntity(), minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(true));
         }
     }
 
