@@ -4,7 +4,9 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -26,6 +28,7 @@ public class ParticleRainClient{
             AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener(ClientStuff::saveListener);
         }
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::clientSetup);
         ParticleRegistry.register(modEventBus);
     }
 
@@ -33,5 +36,9 @@ public class ParticleRainClient{
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(NetworkHandler::init);
+    }
+
+    private void clientSetup(final FMLClientSetupEvent event) {
+        WeatherParticleSpawner.isTFCloaded = ModList.get().isLoaded("tfc");
     }
 }

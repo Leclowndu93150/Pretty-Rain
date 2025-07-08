@@ -101,6 +101,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation "curse.maven:cloth-config-348521:4973441"
+    implementation "curse.maven:tfc-302973:6739107"
+    runtimeOnly "curse.maven:tfc-302973:6739107"
 }
 
 mixin {

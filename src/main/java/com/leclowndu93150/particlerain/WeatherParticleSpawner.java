@@ -19,11 +19,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+import net.dries007.tfc.util.climate.Climate;
+
 import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public final class WeatherParticleSpawner {
 
+    public static boolean isTFCloaded; // Initialized in ParticleRainClient.java
     private static final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
     private static void spawnParticle(ClientLevel level, Holder<Biome> biome, double x, double y, double z) {
@@ -37,7 +40,7 @@ public final class WeatherParticleSpawner {
         if (ParticleRainClient.config.doFogParticles && level.random.nextFloat() < ParticleRainClient.config.fog.density / 100F) {
             level.addParticle(ParticleRegistry.FOG.get(), x, y, z, 0, 0, 0);
         }
-        Precipitation precipitation = biome.value().getPrecipitationAt(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos));
+        Precipitation precipitation = getPrecipitationCompat(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos), biome);
         //biome.value().hasPrecipitation() isn't reliable for modded biomes and seasons
         if (precipitation == Precipitation.RAIN) {
             if (ParticleRainClient.config.doGroundFogParticles && ParticleRainClient.fogCount < ParticleRainClient.config.groundFog.density) {
@@ -106,8 +109,9 @@ public final class WeatherParticleSpawner {
 
     @Nullable
     public static SoundEvent getBiomeSound(BlockPos blockPos, boolean above) {
-        Holder<Biome> biome = Minecraft.getInstance().level.getBiome(blockPos);
-        Precipitation precipitation = biome.value().getPrecipitationAt(blockPos);
+        ClientLevel level = Minecraft.getInstance().level;
+        Holder<Biome> biome = level.getBiome(blockPos);
+        Precipitation precipitation = getPrecipitationCompat(level, blockPos, biome);
         if (precipitation == Precipitation.RAIN && ParticleRainClient.config.doRainSounds) {
             return above ? SoundEvents.WEATHER_RAIN_ABOVE : SoundEvents.WEATHER_RAIN;
         } else if (precipitation == Precipitation.SNOW && ParticleRainClient.config.doSnowSounds) {
@@ -120,5 +124,15 @@ public final class WeatherParticleSpawner {
 
     public static boolean doesThisBlockHaveDustBlowing(Precipitation precipitation, ClientLevel level, BlockPos blockPos, Holder<Biome> biome) {
         return precipitation == Precipitation.NONE && level.getBlockState(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).below()).is(TagKey.create(Registries.BLOCK, ResourceLocation.tryParse(ParticleRainClient.config.sand.matchTags))) && biome.value().getBaseTemperature() > 0.25;
+    }
+
+    private static Precipitation getPrecipitationCompat(ClientLevel level, BlockPos pos, Holder<Biome> biome) {
+        if (isTFCloaded) {
+            // TerraFirmaCraft's version of rainfall calculations, based on seasons etc.
+            return Climate.getPrecipitation(level, pos);
+        } else {
+            // Vanilla precipitation calculation
+            return biome.value().getPrecipitationAt(pos);
+        }
     }
 }
